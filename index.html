@@ -135,6 +135,14 @@
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
   #syncBadge { color: var(--ok); }
   #syncBadge:hover { opacity: .8; }
+  .loc-pill {
+    padding: 7px 14px; border-radius: 999px; font-weight: 600; font-size: 13px;
+    border: 1px solid var(--border); background: var(--panel); color: var(--muted);
+    transition: all .12s;
+  }
+  .loc-pill:hover { background: var(--row-hover); color: var(--text); }
+  .loc-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
+  .loc-pill.active:hover { background: var(--accent-2); }
 
   /* Cards */
   .grid { display: grid; gap: 18px; }
@@ -428,6 +436,14 @@
 
       <!-- Inventory view -->
       <section class="view" id="view-inventory">
+        <div class="loc-pills" id="locPills" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+          <button class="loc-pill active" data-loc=""><span data-i18n="loc_all">All</span></button>
+          <button class="loc-pill" data-loc="SP">SP</button>
+          <button class="loc-pill" data-loc="SK">SK</button>
+          <button class="loc-pill" data-loc="PLT">PLT</button>
+          <button class="loc-pill" data-loc="PRM">PRM</button>
+          <button class="loc-pill" data-loc="GD">GD</button>
+        </div>
         <div class="toolbar">
           <div class="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -829,7 +845,7 @@ const I18N = {
     rep_current_stock:'CURRENT STOCK BY CATEGORY', rep_low_stock:'LOW STOCK ALERT',
     rep_no_sales:'(no sales)', rep_no_restocks:'(no restocks)', rep_no_low:'(no low stock items)',
     rep_units:'units', rep_left:'left', rep_tx:'transactions',
-    locations_label:'Stock by Location', loc_total:'Total',
+    locations_label:'Stock by Location', loc_total:'Total', loc_all:'All',
   },
   id: {
     nav_dashboard:'Beranda', nav_inventory:'Inventaris', nav_sales:'Penjualan', nav_data:'Impor / Ekspor', nav_settings:'Pengaturan',
@@ -879,7 +895,7 @@ const I18N = {
     rep_current_stock:'STOK SAAT INI PER KATEGORI', rep_low_stock:'PERINGATAN STOK RENDAH',
     rep_no_sales:'(tidak ada penjualan)', rep_no_restocks:'(tidak ada restock)', rep_no_low:'(tidak ada stok rendah)',
     rep_units:'unit', rep_left:'tersisa', rep_tx:'transaksi',
-    locations_label:'Stok per Lokasi', loc_total:'Total',
+    locations_label:'Stok per Lokasi', loc_total:'Total', loc_all:'Semua',
   },
 };
 function t(key) { return (I18N[state?.settings?.lang || 'en'] || I18N.en)[key] ?? key; }
@@ -912,6 +928,7 @@ const state = {
   search: '',
   catFilter: '',
   stockFilter: '',
+  locFilter: '',  // '' = total across all locations, else one of LOCATIONS
   sortKey: 'updatedAt',
   sortDir: 'desc',
   editingId: null,
@@ -1523,7 +1540,10 @@ function renderInventory() {
       <div>${state.items.length ? t('empty_no_match') : t('empty_inv')}</div></div></td></tr>`;
   } else {
     body.innerHTML = lst.map(i => {
-      const qty = Number(i.quantity||0);
+      ensureLocations(i);
+      const qty = state.locFilter
+        ? Number(i.locations?.[state.locFilter] || 0)
+        : Number(i.quantity || 0);
       const isLow = qty <= state.settings.lowStockThreshold;
       const thumb = i.photo
         ? `<img class="thumb" src="${i.photo}" alt="" />`
@@ -1978,6 +1998,14 @@ function init() {
   $('#searchInput').addEventListener('input', e => { state.search = e.target.value; renderInventory(); });
   $('#categoryFilter').addEventListener('change', e => { state.catFilter = e.target.value; renderInventory(); });
   $('#stockFilter').addEventListener('change', e => { state.stockFilter = e.target.value; renderInventory(); });
+  // Location pill filter
+  $$('#locPills .loc-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.locFilter = btn.dataset.loc;
+      $$('#locPills .loc-pill').forEach(b => b.classList.toggle('active', b.dataset.loc === state.locFilter));
+      renderInventory();
+    });
+  });
   $$('#invTable thead th[data-sort]').forEach(th => {
     th.addEventListener('click', () => {
       const k = th.dataset.sort;
