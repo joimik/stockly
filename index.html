@@ -132,6 +132,9 @@
   .view { display: none; animation: fade .18s ease; }
   .view.active { display: block; }
   @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+  #syncBadge { color: var(--ok); }
+  #syncBadge:hover { opacity: .8; }
 
   /* Cards */
   .grid { display: grid; gap: 18px; }
@@ -380,6 +383,10 @@
     <div class="topbar">
       <h1 id="viewTitle">Dashboard</h1>
       <div class="actions">
+        <span id="syncBadge" title="Live sync" style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:600;cursor:pointer;" onclick="cloudPull().then(()=>{updateSyncBadge(true);toast(state.settings.lang==='id'?'🔄 Disinkron':'🔄 Synced');renderDashboard();renderInventory();renderSales&&renderSales();})">
+          <span style="width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block;animation:pulse 2s infinite;"></span>
+          LIVE
+        </span>
         <button class="btn" id="installBtn" style="display:none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span data-i18n="install_app">Install App</span>
@@ -2073,16 +2080,38 @@ function init() {
       else if (state.view === 'sales') renderSales();
     }
   });
-  // Periodic background pull (every 60s) to pick up changes from Telegram bot
+  // Periodic background pull (every 15s) to pick up changes from other users / Telegram bot
   setInterval(() => {
     cloudPull().then(updated => {
+      updateSyncBadge(true);
       if (updated) {
         if (state.view === 'dashboard') renderDashboard();
         else if (state.view === 'inventory') renderInventory();
         else if (state.view === 'sales') renderSales();
+        toast(state.settings.lang === 'id' ? '🔄 Data diperbarui' : '🔄 Data updated');
       }
     });
-  }, 60000);
+  }, 15000);
+
+  // Refresh on tab focus (catches changes immediately when user returns to app)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      cloudPull().then(updated => {
+        if (updated) {
+          if (state.view === 'dashboard') renderDashboard();
+          else if (state.view === 'inventory') renderInventory();
+          else if (state.view === 'sales') renderSales();
+        }
+      });
+    }
+  });
+}
+
+function updateSyncBadge(ok) {
+  const el = $('#syncBadge');
+  if (!el) return;
+  el.style.color = ok ? 'var(--ok)' : 'var(--muted)';
+  el.title = ok ? 'Synced ' + new Date().toLocaleTimeString() : 'Offline';
 }
 
 function toggleDark() {
