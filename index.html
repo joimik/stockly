@@ -561,6 +561,13 @@
           </div>
           <div class="setting-row">
             <div>
+              <div class="label">Load 14 Mei 2026 stock data</div>
+              <div class="desc">Imports the full Minol/Beer/Rokok/Soft Drink/Snack list. Updates qty if item already exists.</div>
+            </div>
+            <button class="btn primary" id="loadSeedBtn">Import</button>
+          </div>
+          <div class="setting-row">
+            <div>
               <div class="label">Clear all data</div>
               <div class="desc">Permanently deletes every item from this device</div>
             </div>
@@ -685,7 +692,90 @@ const CATS_KEY = 'inventory_categories';
 const ACTIVITY_KEY = 'inventory_activity';
 const TX_KEY = 'inventory_transactions';
 
-const DEFAULT_CATEGORIES = ['General', 'Food & Beverage', 'Electronics', 'Clothing', 'Office Supplies', 'Raw Materials'];
+const DEFAULT_CATEGORIES = ['Minol', 'Beer', 'Rokok', 'Soft Drink', 'Snack', 'General'];
+
+// Initial stock snapshot — 14 Mei 2026. Quantities are the final/current value from the user's source list.
+const SEED_2026_05_14 = {
+  date: '2026-05-14',
+  items: [
+    // ---------- MINOL ----------
+    { c:'Minol', n:'Chivas 12', q:36 }, { c:'Minol', n:'Chivas 18', q:25 },
+    { c:'Minol', n:'M Red Barel', q:29 }, { c:'Minol', n:'Hennessy', q:22 },
+    { c:'Minol', n:'Tequila Jose', q:55 }, { c:'Minol', n:'Red Label', q:31 },
+    { c:'Minol', n:'Black Label', q:41 }, { c:'Minol', n:'Jack Daniel', q:47 },
+    { c:'Minol', n:'Jack Honey', q:22 }, { c:'Minol', n:'Captain Morgan', q:85 },
+    { c:'Minol', n:'Jameson 700', q:44 }, { c:'Minol', n:'Jameson 1000', q:9 },
+    { c:'Minol', n:'Sababay Red', q:27 }, { c:'Minol', n:'Sababay White', q:78 },
+    { c:'Minol', n:'Smirnoff 750', q:33 }, { c:'Minol', n:'Smirnoff 375', q:44 },
+    { c:'Minol', n:'Smirnoff 200', q:54 }, { c:'Minol', n:'CC Peach', q:17 },
+    { c:'Minol', n:'CC Ori', q:12 }, { c:'Minol', n:'Seagram', q:12 },
+    { c:'Minol', n:'Cointreau', q:21 }, { c:'Minol', n:'JB White', q:4 },
+    { c:'Minol', n:'JG Maister', q:10 }, { c:'Minol', n:'Absolut', q:7 },
+    { c:'Minol', n:'Macallan', q:20 }, { c:'Minol', n:'Gold Label', q:23 },
+    { c:'Minol', n:'Baileys Strawberry', q:8 }, { c:'Minol', n:'Baileys', q:13 },
+    { c:'Minol', n:'Singleton', q:27 }, { c:'Minol', n:'Glenlivet', q:22 },
+    { c:'Minol', n:'Jacob', q:7 }, { c:'Minol', n:'Grey Goose', q:12 },
+    { c:'Minol', n:'Dry Gin', q:10 }, { c:'Minol', n:'Ciroc', q:15 },
+    { c:'Minol', n:'TRD', q:14 }, { c:'Minol', n:'J Jack', q:10 },
+    { c:'Minol', n:'Batavia 350', q:23 }, { c:'Minol', n:'Batavia 700', q:28 },
+    { c:'Minol', n:'ADC Red', q:5 }, { c:'Minol', n:'ADC White', q:8 },
+    { c:'Minol', n:'MCB 700', q:54 }, { c:'Minol', n:'MCB 1000', q:8 },
+    { c:'Minol', n:'Monkey Shoulder', q:7 }, { c:'Minol', n:'Kahlua', q:13 },
+    { c:'Minol', n:'Midori', q:2 }, { c:'Minol', n:'Glenkenny', q:5 },
+    { c:'Minol', n:'Cockburn', q:9 }, { c:'Minol', n:'Glenfidich', q:14 },
+    { c:'Minol', n:'Ballantines', q:10 }, { c:'Minol', n:'Vacary', q:4 },
+    { c:'Minol', n:'Behive', q:1 }, { c:'Minol', n:'Malibu', q:1 },
+    { c:'Minol', n:'M XO', q:6 }, { c:'Minol', n:'Galiano', q:4 },
+    { c:'Minol', n:'Wine Crime CB', q:3 }, { c:'Minol', n:'Wine Crime SZ', q:3 },
+    { c:'Minol', n:'Wine Crime Red Blend', q:1 }, { c:'Minol', n:'V Blue Curacao', q:2 },
+    { c:'Minol', n:'JW Blonde', q:25 }, { c:'Minol', n:'Chivas XV', q:11 },
+    { c:'Minol', n:'Gilbeys Blend 350', q:4 }, { c:'Minol', n:'Gilbeys Blend 700', q:7 },
+    { c:'Minol', n:'Gilbeys Gin 350', q:3 }, { c:'Minol', n:'Gilbeys Gin 700', q:4 },
+    { c:'Minol', n:'Gilbeys Vodka 350', q:4 }, { c:'Minol', n:'Gilbeys Vodka 700', q:4 },
+    // ---------- BEER ----------
+    { c:'Beer', n:'Bintang Large', q:163 }, { c:'Beer', n:'Bintang Small', q:136 },
+    { c:'Beer', n:'Bintang Lemon', q:100 }, { c:'Beer', n:'Guinness Large', q:99 },
+    { c:'Beer', n:'Heineken Large', q:123 }, { c:'Beer', n:'Heineken Small', q:132 },
+    { c:'Beer', n:'Prost Pilsener', q:109 }, { c:'Beer', n:'Prost Lager', q:66 },
+    { c:'Beer', n:'Putao Chee', q:34 }, { c:'Beer', n:'Smirnoff Ice', q:64 },
+    { c:'Beer', n:'Soju Anggur', q:27 }, { c:'Beer', n:'Soju Mangga', q:23 },
+    { c:'Beer', n:'Soju Jeruk', q:23 }, { c:'Beer', n:'Soju Ori', q:32 },
+    { c:'Beer', n:'Soju Peach', q:22 }, { c:'Beer', n:'Soju Leci', q:15 },
+    { c:'Beer', n:'API', q:9 }, { c:'Beer', n:'Kawa Merah', q:9 },
+    { c:'Beer', n:'Gold Amer', q:1 }, { c:'Beer', n:'Royal White', q:11 },
+    { c:'Beer', n:'Draft Bir', q:8 },
+    // ---------- ROKOK ----------
+    { c:'Rokok', n:'DJ Super', q:23 }, { c:'Rokok', n:'Samsoe', q:25 },
+    { c:'Rokok', n:'Garfit', q:20 }, { c:'Rokok', n:'Magnum', q:29 },
+    { c:'Rokok', n:'M. Light', q:29 }, { c:'Rokok', n:'M. Red', q:32 },
+    { c:'Rokok', n:'M. Ice', q:43 }, { c:'Rokok', n:'M Filter Black', q:21 },
+    { c:'Rokok', n:'Avo Mild', q:19 }, { c:'Rokok', n:'Avo Menthol', q:23 },
+    { c:'Rokok', n:'S. Mild', q:136 }, { c:'Rokok', n:'S. Menthol', q:58 },
+    { c:'Rokok', n:'Esse Change', q:89 }, { c:'Rokok', n:'Esse Honey', q:18 },
+    { c:'Rokok', n:'Esse Double', q:77 }, { c:'Rokok', n:'Esse Juice', q:38 },
+    { c:'Rokok', n:'Esse Berry Pop', q:22 }, { c:'Rokok', n:'Esse Double Pop', q:32 },
+    { c:'Rokok', n:'Dunhill', q:36 }, { c:'Rokok', n:'LA Ice', q:24 },
+    { c:'Rokok', n:'Lighter', q:63 }, { c:'Rokok', n:'Surya 16', q:8 },
+    { c:'Rokok', n:'Signature', q:3 },
+    // ---------- SOFT DRINK ----------
+    { c:'Soft Drink', n:'Coca Cola', q:280 }, { c:'Soft Drink', n:'Fanta', q:38 },
+    { c:'Soft Drink', n:'Sprite', q:76 }, { c:'Soft Drink', n:'Kratingdaeng', q:85 },
+    { c:'Soft Drink', n:'Mineral Water 380', q:356 }, { c:'Soft Drink', n:'Mineral Water 240', q:322 },
+    { c:'Soft Drink', n:'Pokka Green Tea', q:190 }, { c:'Soft Drink', n:'Pulpy Orange', q:39 },
+    { c:'Soft Drink', n:'Pocari Sweat', q:41 }, { c:'Soft Drink', n:'You C Orange', q:49 },
+    { c:'Soft Drink', n:'You C Lemon', q:62 }, { c:'Soft Drink', n:'Soda Water', q:22 },
+    // ---------- SNACK ----------
+    { c:'Snack', n:'Red Ginger', q:111 }, { c:'Snack', n:'Chunky Bar', q:40 },
+    { c:'Snack', n:'Silverqueen', q:37 }, { c:'Snack', n:'Mint Candy', q:28 },
+    { c:'Snack', n:'Apples SC', q:61 }, { c:'Snack', n:'Mensexotic', q:9 },
+    { c:'Snack', n:'K. Bawang', q:14 }, { c:'Snack', n:'K. Mede', q:28 },
+    { c:'Snack', n:'Impact Blackcurrent', q:83 }, { c:'Snack', n:'Impact Strawberry', q:37 },
+    { c:'Snack', n:'Impact Melon Honey', q:2 }, { c:'Snack', n:'Impact Fresh Mint', q:102 },
+    { c:'Snack', n:'Impact Peach', q:96 }, { c:'Snack', n:'Butterfly Almond', q:11 },
+    { c:'Snack', n:'Butterfly Pistachios', q:21 }, { c:'Snack', n:'Butterfly Cashew', q:10 },
+    { c:'Snack', n:'Butterfly Peanuts Salted', q:6 },
+  ],
+};
 const DEFAULT_SETTINGS = { dark: false, lowStockThreshold: 5, currency: 'Rp ' };
 
 const PALETTE = ['#1a56db','#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16','#f97316'];
@@ -935,7 +1025,49 @@ function exportTransactionsCSV() {
   download('transactions_' + dateStamp() + '.csv', '﻿' + rows.join('\r\n'), 'text/csv');
 }
 
-function dummy_close_setView() {}
+function loadSeedData() {
+  const seed = SEED_2026_05_14;
+  const msg = `Import ${seed.items.length} items from ${seed.date}?\n\n` +
+    `• New items will be added\n` +
+    `• Existing items (matched by name) will have their stock updated to the new quantity\n\n` +
+    `Continue?`;
+  if (!confirm(msg)) return;
+
+  // Ensure all categories exist
+  const cats = new Set(state.categories);
+  seed.items.forEach(s => cats.add(s.c));
+  state.categories = Array.from(cats);
+
+  let added = 0, updated = 0;
+  const now = Date.now();
+  seed.items.forEach(s => {
+    const existing = state.items.find(i => i.name.toLowerCase() === s.n.toLowerCase());
+    if (existing) {
+      existing.quantity = s.q;
+      existing.category = s.c;
+      existing.updatedAt = now;
+      updated++;
+    } else {
+      state.items.unshift({
+        id: uid(),
+        name: s.n,
+        category: s.c,
+        quantity: s.q,
+        unit: 'pcs',
+        pricePerUnit: 0,
+        notes: '',
+        photo: null,
+        createdAt: now,
+        updatedAt: now,
+      });
+      added++;
+    }
+  });
+  logActivity('add', `Imported ${added + updated} items from ${seed.date} (${added} new, ${updated} updated)`);
+  persistAll();
+  setView('inventory');
+  toast(`Imported · ${added} added, ${updated} updated`);
+}
 
 /* -------- Dashboard -------- */
 function renderDashboard() {
@@ -1563,6 +1695,7 @@ function init() {
     save(SETTINGS_KEY, state.settings);
     renderDashboard(); renderInventory();
   });
+  $('#loadSeedBtn').addEventListener('click', loadSeedData);
   $('#clearDataBtn').addEventListener('click', () => {
     if (!confirm('Delete ALL items and reset settings? This cannot be undone.')) return;
     if (!confirm('Are you absolutely sure? This is permanent.')) return;
