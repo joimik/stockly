@@ -1250,8 +1250,9 @@ function buildReport(rangeKey) {
   // Categories that should expand to show per-item detail (all except Minol)
   const SUMMARY_ONLY = new Set(['Minol']);
 
-  // Low stock
+  // Low stock — exclude Minol (too noisy with bottle counts)
   const low = state.items
+    .filter(i => i.category !== 'Minol')
     .filter(i => Number(i.quantity || 0) <= state.settings.lowStockThreshold)
     .sort((a,b) => Number(a.quantity||0) - Number(b.quantity||0));
 
@@ -1295,7 +1296,7 @@ function buildReport(rangeKey) {
       const sortedItems = d.items.slice().sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       sortedItems.forEach(it => {
         const q = Number(it.quantity || 0);
-        lines.push('    • ' + pad(it.name, 26) + fmtNum(q));
+        lines.push('    • ' + pad(it.name, 26) + String(fmtNum(q)).padStart(5));
       });
     }
     lines.push('');
@@ -1304,7 +1305,7 @@ function buildReport(rangeKey) {
   lines.push('▸ ⚠️  ' + t('rep_low_stock') + ' (≤ ' + state.settings.lowStockThreshold + ')');
   if (!low.length) lines.push('  ' + t('rep_no_low'));
   else low.slice(0, 30).forEach(i => {
-    lines.push('  • ' + pad(i.name, 28) + fmtNum(Number(i.quantity||0)) + ' ' + (i.unit || '') + ' ' + t('rep_left'));
+    lines.push('  • ' + pad(i.name, 26) + String(fmtNum(Number(i.quantity||0))).padStart(5) + '  ' + t('rep_left'));
   });
   lines.push('');
   lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
