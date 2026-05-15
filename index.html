@@ -161,6 +161,40 @@
     40%, 80% { transform: translateX(8px); }
   }
   .pin-shake { animation: shake .4s; }
+  /* Searchable select */
+  .ss-wrap { position: relative; width: 100%; }
+  .ss-input { width: 100%; padding-right: 32px; }
+  .ss-clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 22px; border-radius: 50%; display: none;
+    background: var(--row-hover); color: var(--muted); place-items: center;
+    cursor: pointer; font-size: 14px; line-height: 1; user-select: none;
+  }
+  .ss-wrap.has-value .ss-clear { display: grid; }
+  .ss-chevron {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); pointer-events: none; transition: transform .15s;
+  }
+  .ss-wrap.has-value .ss-chevron { display: none; }
+  .ss-wrap.open .ss-chevron { transform: translateY(-50%) rotate(180deg); }
+  .ss-list {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; box-shadow: var(--shadow);
+    max-height: 280px; overflow-y: auto;
+    z-index: 30; display: none;
+  }
+  .ss-wrap.open .ss-list { display: block; }
+  .ss-option {
+    padding: 10px 12px; cursor: pointer; font-size: 13.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ss-option:last-child { border-bottom: none; }
+  .ss-option:hover, .ss-option.active { background: var(--accent-soft); color: var(--accent); }
+  .ss-option .ss-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; font-weight: 400; }
+  .ss-option:hover .ss-sub, .ss-option.active .ss-sub { color: var(--accent); opacity: .85; }
+  .ss-option .ss-name { font-weight: 600; }
+  .ss-empty { padding: 16px; text-align: center; color: var(--muted); font-size: 13px; }
 
   /* Cards */
   .grid { display: grid; gap: 18px; }
@@ -486,7 +520,12 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" id="searchInput" data-i18n-ph="search_items" placeholder="Search items..." />
           </div>
-          <select id="categoryFilter"><option value="" data-i18n="all_categories">All categories</option></select>
+          <div class="ss-wrap" id="ss_categoryFilter" style="min-width:160px;max-width:220px;flex:1;">
+            <input type="text" class="ss-input" data-i18n-ph="all_categories" placeholder="All categories" autocomplete="off" />
+            <span class="ss-clear">×</span>
+            <svg class="ss-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="ss-list"></div>
+          </div>
           <select id="stockFilter">
             <option value="" data-i18n="all_stock">All stock</option>
             <option value="low" data-i18n="low_only">Low stock only</option>
@@ -521,7 +560,12 @@
             <div style="display:grid;gap:12px;">
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;"><span data-i18n="item_label">Item</span> *</label>
-                <select id="tx_item"></select>
+                <div class="ss-wrap" id="ss_tx_item">
+                  <input type="text" class="ss-input" data-i18n-ph="search_items" placeholder="Search items..." autocomplete="off" />
+                  <span class="ss-clear">×</span>
+                  <svg class="ss-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+                  <div class="ss-list"></div>
+                </div>
               </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;"><span data-i18n="qty_required">Quantity</span> *</label>
@@ -692,7 +736,12 @@
       <div class="full">
         <label><span data-i18n="cat">Category</span> *</label>
         <div class="cat-row">
-          <select id="f_category"></select>
+          <div class="ss-wrap" id="ss_f_category" style="flex:1;">
+            <input type="text" class="ss-input" placeholder="..." autocomplete="off" />
+            <span class="ss-clear">×</span>
+            <svg class="ss-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="ss-list"></div>
+          </div>
           <button class="btn" id="addCatBtn" type="button" title="Add new category">+</button>
         </div>
       </div>
@@ -948,6 +997,123 @@ const state = {
   editingId: null,
 };
 
+/* -------- Searchable Select component -------- */
+function createSearchable(opts) {
+  const wrap = opts.wrap;
+  const input = wrap.querySelector('.ss-input');
+  const list = wrap.querySelector('.ss-list');
+  const clearBtn = wrap.querySelector('.ss-clear');
+  let selectedValue = '';
+  let allOptions = [];
+  let activeIdx = -1;
+
+  function refreshOptions() {
+    allOptions = opts.getOptions();
+  }
+
+  function render(filter) {
+    const q = (filter || '').toLowerCase().trim();
+    const filtered = q
+      ? allOptions.filter(o => o.label.toLowerCase().includes(q) || (o.sublabel || '').toLowerCase().includes(q))
+      : allOptions;
+    if (!filtered.length) {
+      list.innerHTML = `<div class="ss-empty">${opts.emptyText || 'No results'}</div>`;
+      return;
+    }
+    list.innerHTML = filtered.map((o, i) => `
+      <div class="ss-option ${i === activeIdx ? 'active' : ''}" data-i="${i}">
+        <div class="ss-name">${escapeHtml(o.label)}</div>
+        ${o.sublabel ? `<div class="ss-sub">${escapeHtml(o.sublabel)}</div>` : ''}
+      </div>
+    `).join('');
+    list.querySelectorAll('.ss-option').forEach(el => {
+      el.addEventListener('mousedown', e => {
+        e.preventDefault();
+        const i = parseInt(el.dataset.i);
+        select(filtered[i]);
+      });
+    });
+  }
+
+  function open() {
+    refreshOptions();
+    activeIdx = -1;
+    render(input.value === api.getLabel() ? '' : input.value);
+    wrap.classList.add('open');
+  }
+  function close() {
+    wrap.classList.remove('open');
+    activeIdx = -1;
+    // Restore label if value still selected
+    if (selectedValue && api.getLabel()) input.value = api.getLabel();
+  }
+  function select(o) {
+    selectedValue = o.value;
+    input.value = o.label;
+    wrap.classList.add('has-value');
+    close();
+    opts.onSelect?.(o.value, o);
+  }
+
+  const api = {
+    setValue(value) {
+      refreshOptions();
+      selectedValue = value;
+      const found = allOptions.find(o => String(o.value) === String(value));
+      if (found) { input.value = found.label; wrap.classList.add('has-value'); }
+      else { input.value = ''; wrap.classList.remove('has-value'); selectedValue = ''; }
+    },
+    getValue() { return selectedValue; },
+    getLabel() {
+      const found = allOptions.find(o => String(o.value) === String(selectedValue));
+      return found ? found.label : '';
+    },
+    clear() {
+      selectedValue = '';
+      input.value = '';
+      wrap.classList.remove('has-value');
+      opts.onSelect?.('', null);
+    },
+    refresh() { refreshOptions(); if (wrap.classList.contains('open')) render(input.value); },
+  };
+
+  input.addEventListener('focus', open);
+  input.addEventListener('input', () => {
+    activeIdx = -1;
+    render(input.value);
+  });
+  input.addEventListener('keydown', e => {
+    const items = list.querySelectorAll('.ss-option');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      render(input.value);
+      const el = list.querySelector('.ss-option.active');
+      if (el) el.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      render(input.value);
+      const el = list.querySelector('.ss-option.active');
+      if (el) el.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const el = list.querySelector('.ss-option.active') || list.querySelector('.ss-option');
+      if (el) el.dispatchEvent(new MouseEvent('mousedown'));
+    } else if (e.key === 'Escape') {
+      input.blur();
+      close();
+    }
+  });
+  input.addEventListener('blur', () => setTimeout(close, 150));
+  clearBtn?.addEventListener('mousedown', e => {
+    e.preventDefault();
+    api.clear();
+  });
+
+  return api;
+}
+
 /* -------- Cloud sync (Vercel KV via /api/state) -------- */
 const CLOUD_API = '/api/state';
 let _pushTimer = null;
@@ -1066,23 +1232,14 @@ function setView(v) {
 }
 
 /* -------- Sales -------- */
+let _txItemSel = null;
+let _catFilterSel = null;
+let _modalCategorySel = null;
+
 function renderSales() {
-  // Item dropdown
-  const sel = $('#tx_item');
-  const cur = sel.value;
-  if (!state.items.length) {
-    sel.innerHTML = '<option value="">' + t('no_items_inv') + '</option>';
-    sel.disabled = true;
-    $('#tx_submit').disabled = true;
-  } else {
-    sel.disabled = false;
-    $('#tx_submit').disabled = false;
-    const inStock = state.settings.lang==='id' ? 'tersisa' : 'in stock';
-    sel.innerHTML = state.items.map(i =>
-      `<option value="${i.id}">${escapeHtml(i.name)} — ${fmtNum(Number(i.quantity||0))} ${escapeHtml(i.unit||'')} ${inStock}</option>`
-    ).join('');
-    if (cur && state.items.find(x => x.id === cur)) sel.value = cur;
-  }
+  // Refresh item picker options
+  if (_txItemSel) _txItemSel.refresh();
+  $('#tx_submit').disabled = !state.items.length;
   updateTxPreview();
 
   // Stats
@@ -1140,8 +1297,7 @@ function renderSales() {
 }
 
 function updateTxPreview() {
-  const sel = $('#tx_item');
-  const id = sel.value;
+  const id = _txItemSel?.getValue() || '';
   const item = state.items.find(x => x.id === id);
   const qty = parseFloat($('#tx_qty').value) || 0;
   const preview = $('#tx_preview');
@@ -1161,7 +1317,7 @@ function setTxType(type) {
 }
 
 function recordTransaction() {
-  const id = $('#tx_item').value;
+  const id = _txItemSel?.getValue() || '';
   const item = state.items.find(x => x.id === id);
   if (!item) { toast('Select an item'); return; }
   const qty = parseFloat($('#tx_qty').value);
@@ -1193,6 +1349,7 @@ function recordTransaction() {
   persistAll();
 
   // Reset form
+  _txItemSel?.clear();
   $('#tx_qty').value = '';
   $('#tx_note').value = '';
   renderSales();
@@ -1536,13 +1693,7 @@ function getFilteredSorted() {
 }
 
 function renderInventory() {
-  // Update category filter
-  const catSel = $('#categoryFilter');
-  const cur = catSel.value;
-  catSel.innerHTML = '<option value="">' + t('all_categories') + '</option>' +
-    state.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  catSel.value = cur;
-
+  _catFilterSel?.refresh();
   const lst = getFilteredSorted();
   const body = $('#invBody');
 
@@ -1600,10 +1751,8 @@ function renderInventory() {
 
 /* -------- Modal -------- */
 function refreshCategorySelect() {
-  const sel = $('#f_category');
-  const cur = sel.value;
-  sel.innerHTML = state.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  if (cur && state.categories.includes(cur)) sel.value = cur;
+  // Searchable select picks up state.categories via getOptions on next open/refresh
+  _modalCategorySel?.refresh();
 }
 
 function openModal(id = null) {
@@ -1615,7 +1764,7 @@ function openModal(id = null) {
   $('#deleteItemBtn').style.display = item ? 'inline-flex' : 'none';
 
   $('#f_name').value = item?.name || '';
-  $('#f_category').value = item?.category || state.categories[0] || '';
+  _modalCategorySel?.setValue(item?.category || state.categories[0] || '');
   $('#f_quantity').value = item?.quantity ?? '';
   $('#f_unit').value = item?.unit || 'pcs';
   $('#f_notes').value = item?.notes || '';
@@ -1660,7 +1809,7 @@ function saveItem() {
 
   const data = {
     name,
-    category: $('#f_category').value || 'General',
+    category: _modalCategorySel?.getValue() || 'General',
     quantity: qty,
     unit: $('#f_unit').value || 'pcs',
     locations: LOCATIONS.reduce((acc, loc) => {
@@ -1920,6 +2069,32 @@ function init() {
     persistAll(); // push cleanup + locations to cloud
   }
 
+  // Searchable selects
+  _txItemSel = createSearchable({
+    wrap: $('#ss_tx_item'),
+    getOptions: () => state.items.map(i => ({
+      value: i.id,
+      label: i.name,
+      sublabel: `${fmtNum(Number(i.quantity||0))} ${i.unit||''} ${state.settings.lang==='id'?'tersisa':'in stock'}`,
+    })),
+    emptyText: state.settings.lang==='id' ? 'Tidak ada item' : 'No items',
+    onSelect: () => updateTxPreview(),
+  });
+  _modalCategorySel = createSearchable({
+    wrap: $('#ss_f_category'),
+    getOptions: () => state.categories.map(c => ({ value: c, label: c })),
+    emptyText: state.settings.lang==='id' ? 'Tidak ada kategori' : 'No categories',
+  });
+  _catFilterSel = createSearchable({
+    wrap: $('#ss_categoryFilter'),
+    getOptions: () => [
+      { value: '', label: t('all_categories') },
+      ...state.categories.map(c => ({ value: c, label: c })),
+    ],
+    emptyText: t('all_categories'),
+    onSelect: (v) => { state.catFilter = v; renderInventory(); },
+  });
+
   // Nav
   $$('#sideNav button, #bottomNav button').forEach(b => {
     b.addEventListener('click', () => setView(b.dataset.view));
@@ -1962,12 +2137,12 @@ function init() {
       save(CATS_KEY, state.categories);
     }
     refreshCategorySelect();
-    $('#f_category').value = trimmed;
+    _modalCategorySel?.setValue(trimmed);
   });
 
   // Inventory toolbar
   $('#searchInput').addEventListener('input', e => { state.search = e.target.value; renderInventory(); });
-  $('#categoryFilter').addEventListener('change', e => { state.catFilter = e.target.value; renderInventory(); });
+  // categoryFilter wired via _catFilterSel below
   $('#stockFilter').addEventListener('change', e => { state.stockFilter = e.target.value; renderInventory(); });
   // Location pill filter
   $$('#locPills .loc-pill').forEach(btn => {
@@ -1989,7 +2164,6 @@ function init() {
   // Sales
   $('#txTypeSell').addEventListener('click', () => setTxType('sale'));
   $('#txTypeRestock').addEventListener('click', () => setTxType('restock'));
-  $('#tx_item').addEventListener('change', updateTxPreview);
   $('#tx_qty').addEventListener('input', updateTxPreview);
   $('#tx_submit').addEventListener('click', recordTransaction);
   $('#exportTxBtn').addEventListener('click', exportTransactionsCSV);
