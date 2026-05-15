@@ -138,7 +138,7 @@
 
   /* Cards */
   .grid { display: grid; gap: 18px; }
-  .stats { grid-template-columns: repeat(4, 1fr); }
+  .stats { grid-template-columns: repeat(3, 1fr); }
   .card {
     background: var(--panel); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
@@ -449,8 +449,6 @@
                 <th data-sort="category"><span data-i18n="col_category">Category</span> <span class="arrow">↕</span></th>
                 <th data-sort="quantity"><span data-i18n="col_qty">Qty</span> <span class="arrow">↕</span></th>
                 <th data-sort="unit"><span data-i18n="col_unit">Unit</span> <span class="arrow">↕</span></th>
-                <th data-sort="pricePerUnit"><span data-i18n="col_price">Price</span> <span class="arrow">↕</span></th>
-                <th data-sort="totalValue"><span data-i18n="col_total">Total Value</span> <span class="arrow">↕</span></th>
                 <th data-sort="updatedAt"><span data-i18n="col_updated">Updated</span> <span class="arrow">↕</span></th>
                 <th></th>
               </tr>
@@ -475,15 +473,9 @@
                 <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;"><span data-i18n="item_label">Item</span> *</label>
                 <select id="tx_item"></select>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                <div>
-                  <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;"><span data-i18n="qty_required">Quantity</span> *</label>
-                  <input type="number" id="tx_qty" min="0" step="0.01" placeholder="0" />
-                </div>
-                <div>
-                  <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;" id="tx_priceLabel">Price / Unit</label>
-                  <input type="number" id="tx_price" min="0" step="0.01" data-i18n-ph="auto" placeholder="auto" />
-                </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;"><span data-i18n="qty_required">Quantity</span> *</label>
+                <input type="number" id="tx_qty" min="0" step="0.01" placeholder="0" />
               </div>
               <div>
                 <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;" data-i18n="note_opt">Note (optional)</label>
@@ -591,13 +583,6 @@
           </div>
           <div class="setting-row">
             <div>
-              <div class="label" data-i18n="set_cur">Default currency symbol</div>
-              <div class="desc" data-i18n="set_cur_d">Used in displays (e.g. Rp, $, €)</div>
-            </div>
-            <input type="text" id="currencyInput" maxlength="4" style="width:90px;text-align:center;" />
-          </div>
-          <div class="setting-row">
-            <div>
               <div class="label" data-i18n="set_seed">Load 14 Mei 2026 stock data</div>
               <div class="desc" data-i18n="set_seed_d">Imports the full Minol/Beer/Rokok/Soft Drink/Snack list. Updates qty if item already exists.</div>
             </div>
@@ -671,10 +656,6 @@
           <option>pcs</option><option>kg</option><option>g</option><option>L</option><option>mL</option>
           <option>box</option><option>pack</option><option>m</option><option>set</option><option>unit</option>
         </select>
-      </div>
-      <div class="full">
-        <label data-i18n="price_per_unit">Price per Unit</label>
-        <input type="number" id="f_price" step="0.01" min="0" placeholder="0.00" />
       </div>
       <div class="full">
         <label data-i18n="photo">Photo</label>
@@ -1088,16 +1069,18 @@ function renderSales() {
   const today = new Date(); today.setHours(0,0,0,0);
   const todayMs = today.getTime();
   const sales = state.transactions.filter(t => t.type === 'sale');
+  const restocks = state.transactions.filter(t => t.type === 'restock');
   const todaySales = sales.filter(t => t.ts >= todayMs);
-  const todayRevenue = todaySales.reduce((s,t) => s + (t.qty * t.price), 0);
-  const totalRevenue = sales.reduce((s,t) => s + (t.qty * t.price), 0);
+  const todayRestocks = restocks.filter(t => t.ts >= todayMs);
   const totalSold = sales.reduce((s,t) => s + t.qty, 0);
+  const totalRestocked = restocks.reduce((s,t) => s + t.qty, 0);
+  const todayUnitsSold = todaySales.reduce((s,t) => s + t.qty, 0);
 
   $('#salesStats').innerHTML = [
     { label: t('today_sales'), value: fmtNum(todaySales.length), sub: t('tx_count') },
-    { label: t('today_rev'), value: fmtMoney(todayRevenue), sub: t('gross') },
-    { label: t('alltime_rev'), value: fmtMoney(totalRevenue), sub: fmtNum(sales.length) + ' ' + t('total_sales_sub') },
+    { label: t('units_sold') + ' (' + (state.settings.lang==='id'?'hari ini':'today') + ')', value: fmtNum(Math.round(todayUnitsSold*100)/100), sub: fmtNum(todayRestocks.length) + ' restock' },
     { label: t('units_sold'), value: fmtNum(Math.round(totalSold*100)/100), sub: t('alltime') },
+    { label: state.settings.lang==='id'?'Total Restock':'Total Restocked', value: fmtNum(Math.round(totalRestocked*100)/100), sub: t('alltime') },
   ].map(s => `
     <div class="card stat-card">
       <div class="label">${s.label}</div>
@@ -1119,7 +1102,7 @@ function renderSales() {
         <div style="flex:1;min-width:0;">
           <div style="font-size:13.5px;font-weight:600;">${escapeHtml(t.itemName)}</div>
           <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">
-            ${sign}${fmtNum(t.qty)} ${escapeHtml(t.unit||'')} · ${fmtMoney(t.qty * t.price)}${t.note ? ' · ' + escapeHtml(t.note) : ''}
+            ${sign}${fmtNum(t.qty)} ${escapeHtml(t.unit||'')}${t.note ? ' · ' + escapeHtml(t.note) : ''}
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0;">
@@ -1153,7 +1136,6 @@ function setTxType(type) {
   state.txType = type;
   $('#txTypeSell').classList.toggle('primary', type === 'sale');
   $('#txTypeRestock').classList.toggle('primary', type === 'restock');
-  $('#tx_priceLabel').textContent = type === 'sale' ? t('sale_price_unit') : t('cost_unit');
   $('#tx_submit').textContent = type === 'sale' ? t('record_sale') : t('record_restock');
   updateTxPreview();
 }
@@ -1168,8 +1150,6 @@ function recordTransaction() {
   if (state.txType === 'sale' && qty > cur) {
     if (!confirm(`Only ${fmtNum(cur)} ${item.unit||''} in stock. Record anyway? Stock will go negative.`)) return;
   }
-  const priceInput = parseFloat($('#tx_price').value);
-  const price = !isNaN(priceInput) ? priceInput : Number(item.pricePerUnit || 0);
   const note = $('#tx_note').value.trim();
 
   // Update stock
@@ -1183,7 +1163,7 @@ function recordTransaction() {
     itemId: item.id,
     itemName: item.name,
     unit: item.unit,
-    qty, price,
+    qty,
     note,
     ts: Date.now(),
   });
@@ -1194,7 +1174,6 @@ function recordTransaction() {
 
   // Reset form
   $('#tx_qty').value = '';
-  $('#tx_price').value = '';
   $('#tx_note').value = '';
   renderSales();
   toast(state.txType === 'sale' ? `Sale recorded — stock now ${fmtNum(item.quantity)}` : `Restocked — stock now ${fmtNum(item.quantity)}`);
@@ -1217,12 +1196,12 @@ function undoTransaction(txId) {
 
 function exportTransactionsCSV() {
   if (!state.transactions.length) { toast('No transactions to export'); return; }
-  const cols = ['date','type','item','quantity','unit','pricePerUnit','total','note'];
+  const cols = ['date','type','item','quantity','unit','note'];
   const rows = [cols.join(',')];
   state.transactions.forEach(t => {
     rows.push([
       new Date(t.ts).toISOString(),
-      t.type, t.itemName, t.qty, t.unit||'', t.price, (t.qty*t.price), t.note||''
+      t.type, t.itemName, t.qty, t.unit||'', t.note||''
     ].map(csvEscape).join(','));
   });
   download('transactions_' + dateStamp() + '.csv', '﻿' + rows.join('\r\n'), 'text/csv');
@@ -1244,16 +1223,14 @@ function buildReport(rangeKey) {
   const inRange = state.transactions.filter(tx => tx.ts >= from);
   const sales = inRange.filter(t => t.type === 'sale');
   const restocks = inRange.filter(t => t.type === 'restock');
-  const totalRev = sales.reduce((s,t) => s + t.qty * t.price, 0);
   const unitsSold = sales.reduce((s,t) => s + t.qty, 0);
   const unitsRestocked = restocks.reduce((s,t) => s + t.qty, 0);
 
   const aggregate = (list) => {
     const map = {};
     list.forEach(t => {
-      if (!map[t.itemName]) map[t.itemName] = { qty: 0, value: 0, unit: t.unit || '' };
+      if (!map[t.itemName]) map[t.itemName] = { qty: 0, unit: t.unit || '' };
       map[t.itemName].qty += t.qty;
-      map[t.itemName].value += t.qty * t.price;
     });
     return Object.entries(map).sort((a,b) => b[1].qty - a[1].qty);
   };
@@ -1290,7 +1267,6 @@ function buildReport(rangeKey) {
   lines.push('▸ ' + t('rep_summary'));
   lines.push('  ' + pad(t('rep_total_sales') + ':', 22) + fmtNum(sales.length) + ' ' + t('rep_tx'));
   lines.push('  ' + pad(t('rep_units_sold') + ':', 22) + fmtNum(unitsSold));
-  lines.push('  ' + pad(t('rep_total_rev') + ':', 22) + fmtMoney(totalRev));
   lines.push('  ' + pad(t('rep_total_restock') + ':', 22) + fmtNum(restocks.length) + ' ' + t('rep_tx'));
   lines.push('  ' + pad(t('rep_units_restocked') + ':', 22) + fmtNum(unitsRestocked));
   lines.push('');
@@ -1298,7 +1274,7 @@ function buildReport(rangeKey) {
   lines.push('▸ 📤 ' + t('rep_sales_by_item'));
   if (!salesByItem.length) lines.push('  ' + t('rep_no_sales'));
   else salesByItem.forEach(([name, d]) => {
-    lines.push('  • ' + pad(name, 28) + fmtNum(d.qty) + ' ' + (d.unit || t('rep_units')) + '  ' + fmtMoney(d.value));
+    lines.push('  • ' + pad(name, 28) + fmtNum(d.qty) + ' ' + (d.unit || t('rep_units')));
   });
   lines.push('');
 
@@ -1392,7 +1368,6 @@ function loadSeedData() {
         category: s.c,
         quantity: s.q,
         unit: 'pcs',
-        pricePerUnit: 0,
         notes: '',
         photo: null,
         createdAt: now,
@@ -1418,7 +1393,6 @@ function renderDashboard() {
   const stats = [
     { label: t('stat_total_items'), value: fmtNum(totalItems), sub: t('stat_total_items_sub'), icon: 'box' },
     { label: t('stat_total_stock'), value: fmtNum(Math.round(totalQty*100)/100), sub: t('stat_total_stock_sub'), icon: 'layers' },
-    { label: t('stat_value'), value: fmtMoney(totalVal), sub: t('stat_value_sub'), icon: 'dollar' },
     { label: t('stat_low'), value: fmtNum(lowCount), sub: t('stat_low_sub_pre') + ' ' + state.settings.lowStockThreshold + ' ' + t('stat_low_sub_post'), icon: 'alert', warn: lowCount > 0 },
   ];
 
@@ -1524,13 +1498,7 @@ function getFilteredSorted() {
   });
   const k = state.sortKey, dir = state.sortDir === 'asc' ? 1 : -1;
   lst.sort((a,b) => {
-    let av, bv;
-    if (k === 'totalValue') {
-      av = (Number(a.quantity||0) * Number(a.pricePerUnit||0));
-      bv = (Number(b.quantity||0) * Number(b.pricePerUnit||0));
-    } else {
-      av = a[k]; bv = b[k];
-    }
+    let av = a[k], bv = b[k];
     if (typeof av === 'string') { av = av.toLowerCase(); bv = (bv||'').toLowerCase(); }
     if (av == null) av = '';
     if (bv == null) bv = '';
@@ -1551,12 +1519,11 @@ function renderInventory() {
   const body = $('#invBody');
 
   if (!lst.length) {
-    body.innerHTML = `<tr><td colspan="8"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    body.innerHTML = `<tr><td colspan="6"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       <div>${state.items.length ? t('empty_no_match') : t('empty_inv')}</div></div></td></tr>`;
   } else {
     body.innerHTML = lst.map(i => {
       const qty = Number(i.quantity||0);
-      const tv = qty * Number(i.pricePerUnit||0);
       const isLow = qty <= state.settings.lowStockThreshold;
       const thumb = i.photo
         ? `<img class="thumb" src="${i.photo}" alt="" />`
@@ -1566,8 +1533,6 @@ function renderInventory() {
         <td><span class="pill">${escapeHtml(i.category||'—')}</span></td>
         <td>${fmtNum(qty)}</td>
         <td>${escapeHtml(i.unit||'')}</td>
-        <td>${fmtMoney(i.pricePerUnit)}</td>
-        <td><strong>${fmtMoney(tv)}</strong></td>
         <td style="color:var(--muted);font-size:12px;">${timeAgo(i.updatedAt||i.createdAt||Date.now())}</td>
         <td><div class="row-actions">
           <button class="edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
@@ -1629,7 +1594,6 @@ function openModal(id = null) {
   $('#f_category').value = item?.category || state.categories[0] || '';
   $('#f_quantity').value = item?.quantity ?? '';
   $('#f_unit').value = item?.unit || 'pcs';
-  $('#f_price').value = item?.pricePerUnit ?? '';
   $('#f_notes').value = item?.notes || '';
   state.photoData = item?.photo || null;
   updatePhotoPreview();
@@ -1691,7 +1655,6 @@ function saveItem() {
     category: $('#f_category').value || 'General',
     quantity: qty,
     unit: $('#f_unit').value || 'pcs',
-    pricePerUnit: parseFloat($('#f_price').value) || 0,
     notes: $('#f_notes').value.trim(),
     photo: state.photoData,
     updatedAt: Date.now(),
@@ -1722,12 +1685,11 @@ function csvEscape(v) {
 }
 function exportCSV() {
   if (!state.items.length) { toast('Nothing to export'); return; }
-  const cols = ['name','category','quantity','unit','pricePerUnit','totalValue','notes','createdAt','updatedAt'];
+  const cols = ['name','category','quantity','unit','notes','createdAt','updatedAt'];
   const rows = [cols.join(',')];
   state.items.forEach(i => {
     rows.push([
-      i.name, i.category, i.quantity, i.unit, i.pricePerUnit,
-      (Number(i.quantity||0)*Number(i.pricePerUnit||0)),
+      i.name, i.category, i.quantity, i.unit,
       i.notes,
       new Date(i.createdAt||Date.now()).toISOString(),
       new Date(i.updatedAt||Date.now()).toISOString(),
@@ -1788,7 +1750,7 @@ function importCSVFile(file) {
     const header = rows[0].map(h => h.trim().toLowerCase());
     const idx = (k) => header.indexOf(k);
     const iN = idx('name'), iC = idx('category'), iQ = idx('quantity'),
-          iU = idx('unit'), iP = idx('priceperunit'), iNo = idx('notes');
+          iU = idx('unit'), iNo = idx('notes');
     if (iN < 0) { toast('CSV must have a "name" column'); return; }
     let added = 0;
     for (let r = 1; r < rows.length; r++) {
@@ -1803,7 +1765,6 @@ function importCSVFile(file) {
         category: cat,
         quantity: iQ>=0 ? parseFloat(row[iQ])||0 : 0,
         unit: iU>=0 ? (row[iU]||'pcs').trim() : 'pcs',
-        pricePerUnit: iP>=0 ? parseFloat(row[iP])||0 : 0,
         notes: iNo>=0 ? (row[iNo]||'').trim() : '',
         photo: null,
         createdAt: Date.now(), updatedAt: Date.now(),
@@ -2041,12 +2002,6 @@ function init() {
     save(SETTINGS_KEY, state.settings);
     renderDashboard(); renderInventory();
   });
-  $('#currencyInput').value = state.settings.currency;
-  $('#currencyInput').addEventListener('change', e => {
-    state.settings.currency = e.target.value;
-    save(SETTINGS_KEY, state.settings);
-    renderDashboard(); renderInventory();
-  });
   $('#loadSeedBtn').addEventListener('click', loadSeedData);
   $('#clearDataBtn').addEventListener('click', () => {
     if (!confirm('Delete ALL items and reset settings? This cannot be undone.')) return;
@@ -2056,7 +2011,6 @@ function init() {
     persistAll();
     applyTheme();
     $('#lowStockInput').value = state.settings.lowStockThreshold;
-    $('#currencyInput').value = state.settings.currency;
     renderDashboard(); renderInventory();
     toast('All data cleared');
   });

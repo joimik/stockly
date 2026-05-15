@@ -13,7 +13,6 @@ async function tg(method, body) {
 }
 const reply = (chatId, text) => tg('sendMessage', { chat_id: chatId, text, parse_mode: 'Markdown', disable_web_page_preview: true });
 
-const fmtMoney = n => 'Rp ' + Math.round(Number(n) || 0).toLocaleString('id-ID');
 const fmtNum = n => {
   const v = Math.round((Number(n) || 0) * 100) / 100;
   return v.toLocaleString('id-ID');
@@ -32,17 +31,14 @@ function buildReport(state) {
   const todayMs = today.getTime();
   const sales = txs.filter(t => t.type === 'sale' && t.ts >= todayMs);
   const restocks = txs.filter(t => t.type === 'restock' && t.ts >= todayMs);
-  const totalRev = sales.reduce((s, t) => s + (t.qty || 0) * (t.price || 0), 0);
   const unitsSold = sales.reduce((s, t) => s + (t.qty || 0), 0);
   const unitsRestocked = restocks.reduce((s, t) => s + (t.qty || 0), 0);
-  const totalVal = items.reduce((s, i) => s + Number(i.quantity || 0) * Number(i.pricePerUnit || 0), 0);
 
   const aggregate = list => {
     const m = {};
     list.forEach(t => {
-      if (!m[t.itemName]) m[t.itemName] = { qty: 0, val: 0, unit: t.unit || '' };
+      if (!m[t.itemName]) m[t.itemName] = { qty: 0, unit: t.unit || '' };
       m[t.itemName].qty += t.qty || 0;
-      m[t.itemName].val += (t.qty || 0) * (t.price || 0);
     });
     return Object.entries(m).sort((a, b) => b[1].qty - a[1].qty);
   };
@@ -67,13 +63,12 @@ function buildReport(state) {
   r += `*▸ RINGKASAN HARI INI*\n`;
   r += `Penjualan: *${sales.length}* transaksi\n`;
   r += `Unit terjual: *${fmtNum(unitsSold)}*\n`;
-  r += `Pendapatan: *${fmtMoney(totalRev)}*\n`;
   r += `Restock: *${restocks.length}* transaksi (+${fmtNum(unitsRestocked)} unit)\n\n`;
 
   if (salesByItem.length) {
     r += `*▸ 📤 PENJUALAN HARI INI*\n`;
     salesByItem.slice(0, 20).forEach(([n, d]) => {
-      r += `• ${n}: ${fmtNum(d.qty)} ${d.unit} — ${fmtMoney(d.val)}\n`;
+      r += `• ${n}: ${fmtNum(d.qty)} ${d.unit}\n`;
     });
     r += '\n';
   }
@@ -89,7 +84,7 @@ function buildReport(state) {
   Object.entries(byCat).sort((a, b) => b[1].units - a[1].units).forEach(([c, d]) => {
     r += `• ${c}: ${d.count} item · ${fmtNum(d.units)} unit\n`;
   });
-  r += `Total nilai: *${fmtMoney(totalVal)}*\n\n`;
+  r += '\n';
 
   r += `*▸ ⚠️ STOK RENDAH (≤${threshold})*\n`;
   if (!low.length) r += `_(semua aman)_\n`;
@@ -119,9 +114,7 @@ function buildStock(state, query) {
   let r = `*🔎 Hasil untuk "${query}"*\n\n`;
   matches.slice(0, 15).forEach(i => {
     const q = Number(i.quantity || 0);
-    r += `• *${i.name}* — ${fmtNum(q)} ${i.unit || ''}`;
-    if (i.pricePerUnit) r += ` (${fmtMoney(i.pricePerUnit * q)})`;
-    r += '\n';
+    r += `• *${i.name}* — ${fmtNum(q)} ${i.unit || ''}\n`;
   });
   if (matches.length > 15) r += `\n_…dan ${matches.length - 15} lagi_`;
   return r;
@@ -158,7 +151,6 @@ function recordTx(state, type, query) {
     itemName: item.name,
     unit: item.unit,
     qty,
-    price: Number(item.pricePerUnit || 0),
     note: 'via Telegram',
     ts: Date.now(),
   });
