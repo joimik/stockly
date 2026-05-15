@@ -1237,15 +1237,18 @@ function buildReport(rangeKey) {
   const salesByItem = aggregate(sales);
   const restocksByItem = aggregate(restocks);
 
-  // Stock by category
+  // Stock by category — group items
   const byCat = {};
   state.items.forEach(i => {
     const c = i.category || 'Uncategorized';
-    if (!byCat[c]) byCat[c] = { count: 0, units: 0 };
+    if (!byCat[c]) byCat[c] = { count: 0, units: 0, items: [] };
     byCat[c].count++;
     byCat[c].units += Number(i.quantity || 0);
+    byCat[c].items.push(i);
   });
   const catList = Object.entries(byCat).sort((a,b) => b[1].units - a[1].units);
+  // Categories that should expand to show per-item detail (all except Minol)
+  const SUMMARY_ONLY = new Set(['Minol']);
 
   // Low stock
   const low = state.items
@@ -1287,9 +1290,16 @@ function buildReport(rangeKey) {
 
   lines.push('▸ 📦 ' + t('rep_current_stock'));
   catList.forEach(([cat, d]) => {
-    lines.push('  • ' + pad(cat, 22) + fmtNum(d.count) + ' items · ' + fmtNum(d.units) + ' ' + t('rep_units'));
+    lines.push('  ' + cat + ' — ' + fmtNum(d.count) + ' items · ' + fmtNum(d.units) + ' ' + t('rep_units'));
+    if (!SUMMARY_ONLY.has(cat)) {
+      const sortedItems = d.items.slice().sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      sortedItems.forEach(it => {
+        const q = Number(it.quantity || 0);
+        lines.push('    • ' + pad(it.name, 26) + fmtNum(q) + ' ' + (it.unit || t('rep_units')));
+      });
+    }
+    lines.push('');
   });
-  lines.push('');
 
   lines.push('▸ ⚠️  ' + t('rep_low_stock') + ' (≤ ' + state.settings.lowStockThreshold + ')');
   if (!low.length) lines.push('  ' + t('rep_no_low'));
