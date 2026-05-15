@@ -1262,6 +1262,7 @@ function buildReport(rangeKey) {
 
   const pad = (s, n) => String(s).padEnd(n);
   const lines = [];
+  lines.push('```');
   lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   lines.push('  📊  ' + t('rep_title'));
   lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -1311,6 +1312,7 @@ function buildReport(rangeKey) {
   lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   lines.push('  Stockly · ' + state.items.length + ' items tracked');
   lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  lines.push('```');
 
   return lines.join('\n');
 }
