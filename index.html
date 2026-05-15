@@ -940,6 +940,60 @@ const state = {
   photoData: null,
 };
 
+/* -------- Cloud sync (Vercel KV via /api/state) -------- */
+const CLOUD_API = '/api/state';
+let _pushTimer = null;
+let _pulling = false;
+
+function cloudPushDebounced() {
+  clearTimeout(_pushTimer);
+  _pushTimer = setTimeout(cloudPushNow, 1500);
+}
+async function cloudPushNow() {
+  if (_pulling) return;
+  try {
+    const payload = {
+      items: state.items, transactions: state.transactions,
+      categories: state.categories, settings: state.settings,
+      activity: state.activity,
+    };
+    const r = await fetch(CLOUD_API, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (r.ok) {
+      const j = await r.json();
+      if (j.lastSync) localStorage.setItem('cloud_last_pulled', j.lastSync);
+    }
+  } catch {/* offline ok, will sync next time */}
+}
+async function cloudPull() {
+  _pulling = true;
+  try {
+    const r = await fetch(CLOUD_API);
+    if (!r.ok) return false;
+    const cloud = await r.json();
+    if (!cloud || !cloud.lastSync) return false;
+    const localStamp = Number(localStorage.getItem('cloud_last_pulled') || 0);
+    if (cloud.lastSync > localStamp) {
+      if (Array.isArray(cloud.items)) state.items = cloud.items;
+      if (Array.isArray(cloud.transactions)) state.transactions = cloud.transactions;
+      if (Array.isArray(cloud.categories) && cloud.categories.length) state.categories = cloud.categories;
+      if (cloud.settings) state.settings = { ...state.settings, ...cloud.settings, lang: state.settings.lang };
+      if (Array.isArray(cloud.activity)) state.activity = cloud.activity;
+      save(STORAGE_KEY, state.items);
+      save(SETTINGS_KEY, state.settings);
+      save(CATS_KEY, state.categories);
+      save(ACTIVITY_KEY, state.activity);
+      save(TX_KEY, state.transactions);
+      localStorage.setItem('cloud_last_pulled', cloud.lastSync);
+      return true;
+    }
+  } catch {/* offline ok */}
+  finally { _pulling = false; }
+  return false;
+}
+
 function load(key, fallback) {
   try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
   catch { return fallback; }
@@ -951,6 +1005,7 @@ function persistAll() {
   save(CATS_KEY, state.categories);
   save(ACTIVITY_KEY, state.activity);
   save(TX_KEY, state.transactions);
+  cloudPushDebounced();
 }
 
 function uid() { return 'i_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -2009,6 +2064,25 @@ function init() {
 
   setView('dashboard');
   applyI18n();
+
+  // Pull cloud state, then re-render if something changed
+  cloudPull().then(updated => {
+    if (updated) {
+      if (state.view === 'dashboard') renderDashboard();
+      else if (state.view === 'inventory') renderInventory();
+      else if (state.view === 'sales') renderSales();
+    }
+  });
+  // Periodic background pull (every 60s) to pick up changes from Telegram bot
+  setInterval(() => {
+    cloudPull().then(updated => {
+      if (updated) {
+        if (state.view === 'dashboard') renderDashboard();
+        else if (state.view === 'inventory') renderInventory();
+        else if (state.view === 'sales') renderSales();
+      }
+    });
+  }, 60000);
 }
 
 function toggleDark() {
