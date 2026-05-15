@@ -658,6 +658,17 @@
         </select>
       </div>
       <div class="full">
+        <label data-i18n="locations_label">Stock by Location</label>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;">
+          <div><div style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:2px;font-weight:700;">SP</div><input type="number" id="f_loc_SP" min="0" step="1" style="text-align:center;padding:8px 4px;" /></div>
+          <div><div style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:2px;font-weight:700;">SK</div><input type="number" id="f_loc_SK" min="0" step="1" style="text-align:center;padding:8px 4px;" /></div>
+          <div><div style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:2px;font-weight:700;">PLT</div><input type="number" id="f_loc_PLT" min="0" step="1" style="text-align:center;padding:8px 4px;" /></div>
+          <div><div style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:2px;font-weight:700;">PRM</div><input type="number" id="f_loc_PRM" min="0" step="1" style="text-align:center;padding:8px 4px;" /></div>
+          <div><div style="font-size:10px;color:var(--muted);text-align:center;margin-bottom:2px;font-weight:700;">GD</div><input type="number" id="f_loc_GD" min="0" step="1" style="text-align:center;padding:8px 4px;" /></div>
+        </div>
+        <div id="loc_total" style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right;"></div>
+      </div>
+      <div class="full">
         <label data-i18n="photo">Photo</label>
         <div class="photo-area">
           <div class="photo-preview" id="photoPreview">
@@ -706,46 +717,23 @@ const CATS_KEY = 'inventory_categories';
 const ACTIVITY_KEY = 'inventory_activity';
 const TX_KEY = 'inventory_transactions';
 
-const DEFAULT_CATEGORIES = ['Minol', 'Beer', 'Rokok', 'Soft Drink', 'Snack', 'General'];
+const DEFAULT_CATEGORIES = ['Beer', 'Rokok', 'Soft Drink', 'Snack', 'General'];
+
+const LOCATIONS = ['SP', 'SK', 'PLT', 'PRM', 'GD'];
+function ensureLocations(item) {
+  if (!item.locations || typeof item.locations !== 'object') {
+    item.locations = {};
+    LOCATIONS.forEach(loc => {
+      item.locations[loc] = Math.floor(Math.random() * 30) + 1;
+    });
+  }
+  return item;
+}
 
 // Initial stock snapshot — 14 Mei 2026. Quantities are the final/current value from the user's source list.
 const SEED_2026_05_14 = {
   date: '2026-05-14',
   items: [
-    // ---------- MINOL ----------
-    { c:'Minol', n:'Chivas 12', q:36 }, { c:'Minol', n:'Chivas 18', q:25 },
-    { c:'Minol', n:'M Red Barel', q:29 }, { c:'Minol', n:'Hennessy', q:22 },
-    { c:'Minol', n:'Tequila Jose', q:55 }, { c:'Minol', n:'Red Label', q:31 },
-    { c:'Minol', n:'Black Label', q:41 }, { c:'Minol', n:'Jack Daniel', q:47 },
-    { c:'Minol', n:'Jack Honey', q:22 }, { c:'Minol', n:'Captain Morgan', q:85 },
-    { c:'Minol', n:'Jameson 700', q:44 }, { c:'Minol', n:'Jameson 1000', q:9 },
-    { c:'Minol', n:'Sababay Red', q:27 }, { c:'Minol', n:'Sababay White', q:78 },
-    { c:'Minol', n:'Smirnoff 750', q:33 }, { c:'Minol', n:'Smirnoff 375', q:44 },
-    { c:'Minol', n:'Smirnoff 200', q:54 }, { c:'Minol', n:'CC Peach', q:17 },
-    { c:'Minol', n:'CC Ori', q:12 }, { c:'Minol', n:'Seagram', q:12 },
-    { c:'Minol', n:'Cointreau', q:21 }, { c:'Minol', n:'JB White', q:4 },
-    { c:'Minol', n:'JG Maister', q:10 }, { c:'Minol', n:'Absolut', q:7 },
-    { c:'Minol', n:'Macallan', q:20 }, { c:'Minol', n:'Gold Label', q:23 },
-    { c:'Minol', n:'Baileys Strawberry', q:8 }, { c:'Minol', n:'Baileys', q:13 },
-    { c:'Minol', n:'Singleton', q:27 }, { c:'Minol', n:'Glenlivet', q:22 },
-    { c:'Minol', n:'Jacob', q:7 }, { c:'Minol', n:'Grey Goose', q:12 },
-    { c:'Minol', n:'Dry Gin', q:10 }, { c:'Minol', n:'Ciroc', q:15 },
-    { c:'Minol', n:'TRD', q:14 }, { c:'Minol', n:'J Jack', q:10 },
-    { c:'Minol', n:'Batavia 350', q:23 }, { c:'Minol', n:'Batavia 700', q:28 },
-    { c:'Minol', n:'ADC Red', q:5 }, { c:'Minol', n:'ADC White', q:8 },
-    { c:'Minol', n:'MCB 700', q:54 }, { c:'Minol', n:'MCB 1000', q:8 },
-    { c:'Minol', n:'Monkey Shoulder', q:7 }, { c:'Minol', n:'Kahlua', q:13 },
-    { c:'Minol', n:'Midori', q:2 }, { c:'Minol', n:'Glenkenny', q:5 },
-    { c:'Minol', n:'Cockburn', q:9 }, { c:'Minol', n:'Glenfidich', q:14 },
-    { c:'Minol', n:'Ballantines', q:10 }, { c:'Minol', n:'Vacary', q:4 },
-    { c:'Minol', n:'Behive', q:1 }, { c:'Minol', n:'Malibu', q:1 },
-    { c:'Minol', n:'M XO', q:6 }, { c:'Minol', n:'Galiano', q:4 },
-    { c:'Minol', n:'Wine Crime CB', q:3 }, { c:'Minol', n:'Wine Crime SZ', q:3 },
-    { c:'Minol', n:'Wine Crime Red Blend', q:1 }, { c:'Minol', n:'V Blue Curacao', q:2 },
-    { c:'Minol', n:'JW Blonde', q:25 }, { c:'Minol', n:'Chivas XV', q:11 },
-    { c:'Minol', n:'Gilbeys Blend 350', q:4 }, { c:'Minol', n:'Gilbeys Blend 700', q:7 },
-    { c:'Minol', n:'Gilbeys Gin 350', q:3 }, { c:'Minol', n:'Gilbeys Gin 700', q:4 },
-    { c:'Minol', n:'Gilbeys Vodka 350', q:4 }, { c:'Minol', n:'Gilbeys Vodka 700', q:4 },
     // ---------- BEER ----------
     { c:'Beer', n:'Bintang Large', q:163 }, { c:'Beer', n:'Bintang Small', q:136 },
     { c:'Beer', n:'Bintang Lemon', q:100 }, { c:'Beer', n:'Guinness Large', q:99 },
@@ -822,7 +810,7 @@ const I18N = {
     set_lang:'Language', set_lang_d:'Interface language',
     set_low:'Low stock threshold', set_low_d:'Items at or below this quantity are flagged',
     set_cur:'Default currency symbol', set_cur_d:'Used in displays (e.g. Rp, $, €)',
-    set_seed:'Load 14 Mei 2026 stock data', set_seed_d:'Imports the full Minol/Beer/Rokok/Soft Drink/Snack list. Updates qty if item already exists.', set_seed_btn:'Import',
+    set_seed:'Load 14 Mei 2026 stock data', set_seed_d:'Imports the full Beer/Rokok/Soft Drink/Snack list. Updates qty if item already exists.', set_seed_btn:'Import',
     set_clear:'Clear all data', set_clear_d:'Permanently deletes every item from this device', set_clear_btn:'Reset',
     empty_no_data:'No data yet — add your first item.', empty_no_act:'No activity yet',
     empty_no_match:'No items match your filter', empty_inv:'Your inventory is empty — click "Add Item" to start',
@@ -841,6 +829,7 @@ const I18N = {
     rep_current_stock:'CURRENT STOCK BY CATEGORY', rep_low_stock:'LOW STOCK ALERT',
     rep_no_sales:'(no sales)', rep_no_restocks:'(no restocks)', rep_no_low:'(no low stock items)',
     rep_units:'units', rep_left:'left', rep_tx:'transactions',
+    locations_label:'Stock by Location', loc_total:'Total',
   },
   id: {
     nav_dashboard:'Beranda', nav_inventory:'Inventaris', nav_sales:'Penjualan', nav_data:'Impor / Ekspor', nav_settings:'Pengaturan',
@@ -871,7 +860,7 @@ const I18N = {
     set_lang:'Bahasa', set_lang_d:'Bahasa antarmuka',
     set_low:'Batas stok rendah', set_low_d:'Item dengan jumlah ini atau kurang akan ditandai',
     set_cur:'Simbol mata uang', set_cur_d:'Digunakan dalam tampilan (mis. Rp, $, €)',
-    set_seed:'Muat data stok 14 Mei 2026', set_seed_d:'Impor daftar lengkap Minol/Beer/Rokok/Soft Drink/Snack. Memperbarui jumlah jika item sudah ada.', set_seed_btn:'Impor',
+    set_seed:'Muat data stok 14 Mei 2026', set_seed_d:'Impor daftar lengkap Beer/Rokok/Soft Drink/Snack. Memperbarui jumlah jika item sudah ada.', set_seed_btn:'Impor',
     set_clear:'Hapus semua data', set_clear_d:'Menghapus permanen semua item dari perangkat ini', set_clear_btn:'Reset',
     empty_no_data:'Belum ada data — tambah item pertamamu.', empty_no_act:'Belum ada aktivitas',
     empty_no_match:'Tidak ada item yang cocok dengan filter', empty_inv:'Inventaris kosong — klik "Tambah Item" untuk mulai',
@@ -890,6 +879,7 @@ const I18N = {
     rep_current_stock:'STOK SAAT INI PER KATEGORI', rep_low_stock:'PERINGATAN STOK RENDAH',
     rep_no_sales:'(tidak ada penjualan)', rep_no_restocks:'(tidak ada restock)', rep_no_low:'(tidak ada stok rendah)',
     rep_units:'unit', rep_left:'tersisa', rep_tx:'transaksi',
+    locations_label:'Stok per Lokasi', loc_total:'Total',
   },
 };
 function t(key) { return (I18N[state?.settings?.lang || 'en'] || I18N.en)[key] ?? key; }
@@ -1247,12 +1237,9 @@ function buildReport(rangeKey) {
     byCat[c].items.push(i);
   });
   const catList = Object.entries(byCat).sort((a,b) => b[1].units - a[1].units);
-  // Categories that should expand to show per-item detail (all except Minol)
-  const SUMMARY_ONLY = new Set(['Minol']);
+  const SUMMARY_ONLY = new Set();
 
-  // Low stock — exclude Minol (too noisy with bottle counts)
   const low = state.items
-    .filter(i => i.category !== 'Minol')
     .filter(i => Number(i.quantity || 0) <= state.settings.lowStockThreshold)
     .sort((a,b) => Number(a.quantity||0) - Number(b.quantity||0));
 
@@ -1608,6 +1595,10 @@ function openModal(id = null) {
   $('#f_quantity').value = item?.quantity ?? '';
   $('#f_unit').value = item?.unit || 'pcs';
   $('#f_notes').value = item?.notes || '';
+  // Locations: existing items get their values; new items default to 0
+  const locs = item ? (ensureLocations(item), item.locations) : { SP:0, SK:0, PLT:0, PRM:0, GD:0 };
+  LOCATIONS.forEach(loc => { $('#f_loc_' + loc).value = locs[loc] ?? 0; });
+  updateLocTotal();
   state.photoData = item?.photo || null;
   updatePhotoPreview();
 
@@ -1619,6 +1610,12 @@ function closeModal() {
   $('#itemModal').classList.remove('open');
   state.editingId = null;
   state.photoData = null;
+}
+
+function updateLocTotal() {
+  const sum = LOCATIONS.reduce((s, loc) => s + (parseInt($('#f_loc_' + loc)?.value) || 0), 0);
+  const el = $('#loc_total');
+  if (el) el.textContent = t('loc_total') + ': ' + fmtNum(sum);
 }
 
 function updatePhotoPreview() {
@@ -1668,6 +1665,10 @@ function saveItem() {
     category: $('#f_category').value || 'General',
     quantity: qty,
     unit: $('#f_unit').value || 'pcs',
+    locations: LOCATIONS.reduce((acc, loc) => {
+      acc[loc] = Math.max(0, parseInt($('#f_loc_' + loc).value) || 0);
+      return acc;
+    }, {}),
     notes: $('#f_notes').value.trim(),
     photo: state.photoData,
     updatedAt: Date.now(),
@@ -1913,6 +1914,15 @@ function init() {
   applyTheme();
   setupPWA();
 
+  // Migration: strip any Minol items/categories and seed locations for every item
+  const before = state.items.length;
+  state.items = state.items.filter(i => i.category !== 'Minol');
+  state.categories = state.categories.filter(c => c !== 'Minol');
+  state.items.forEach(ensureLocations);
+  if (state.items.length !== before || state.items.length) {
+    persistAll(); // push cleanup + locations to cloud
+  }
+
   // Nav
   $$('#sideNav button, #bottomNav button').forEach(b => {
     b.addEventListener('click', () => setView(b.dataset.view));
@@ -1948,6 +1958,7 @@ function init() {
   $('#removePhotoBtn').addEventListener('click', () => { state.photoData = null; updatePhotoPreview(); });
   $('#photoFileInput').addEventListener('change', e => readPhoto(e.target.files[0]));
   $('#photoCameraInput').addEventListener('change', e => readPhoto(e.target.files[0]));
+  LOCATIONS.forEach(loc => $('#f_loc_' + loc).addEventListener('input', updateLocTotal));
 
   // Add category
   $('#addCatBtn').addEventListener('click', () => {
@@ -2042,6 +2053,12 @@ function init() {
   // Pull cloud state, then re-render if something changed
   cloudPull().then(updated => {
     if (updated) {
+      // Clean Minol from cloud data + seed locations on freshly pulled items
+      const sizeBefore = state.items.length;
+      state.items = state.items.filter(i => i.category !== 'Minol');
+      state.categories = state.categories.filter(c => c !== 'Minol');
+      state.items.forEach(ensureLocations);
+      if (state.items.length !== sizeBefore) persistAll();
       if (state.view === 'dashboard') renderDashboard();
       else if (state.view === 'inventory') renderInventory();
       else if (state.view === 'sales') renderSales();
