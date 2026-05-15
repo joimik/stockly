@@ -1295,7 +1295,7 @@ function buildReport(rangeKey) {
       const sortedItems = d.items.slice().sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       sortedItems.forEach(it => {
         const q = Number(it.quantity || 0);
-        lines.push('    • ' + pad(it.name, 26) + fmtNum(q) + ' ' + (it.unit || t('rep_units')));
+        lines.push('    • ' + pad(it.name, 26) + fmtNum(q));
       });
     }
     lines.push('');
