@@ -348,23 +348,23 @@
     <nav class="nav" id="sideNav">
       <button data-view="dashboard" class="active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-        Dashboard
+        <span data-i18n="nav_dashboard">Dashboard</span>
       </button>
       <button data-view="inventory">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        Inventory
+        <span data-i18n="nav_inventory">Inventory</span>
       </button>
       <button data-view="sales">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-        Sales
+        <span data-i18n="nav_sales">Sales</span>
       </button>
       <button data-view="data">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Import / Export
+        <span data-i18n="nav_data">Import / Export</span>
       </button>
       <button data-view="settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Settings
+        <span data-i18n="nav_settings">Settings</span>
       </button>
     </nav>
     <div class="sidebar-footer">
@@ -382,11 +382,11 @@
       <div class="actions">
         <button class="btn" id="installBtn" style="display:none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Install App</span>
+          <span data-i18n="install_app">Install App</span>
         </button>
         <button class="btn primary" id="addItemBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span>Add Item</span>
+          <span data-i18n="add_item">Add Item</span>
         </button>
       </div>
     </div>
@@ -395,8 +395,8 @@
       <!-- Dashboard view -->
       <section class="view active" id="view-dashboard">
         <div class="install-banner" id="installBanner">
-          <span>📲 Install Stockly on your device for quick access</span>
-          <button class="btn" id="installBannerBtn">Install</button>
+          <span data-i18n="install_banner">📲 Install Stockly on your device for quick access</span>
+          <button class="btn" id="installBannerBtn" data-i18n="install">Install</button>
         </div>
 
         <div class="grid stats" id="statsGrid"></div>
@@ -404,15 +404,15 @@
         <div class="grid row-2" style="margin-top: 18px;">
           <div class="card">
             <div class="section-title">
-              <h3>Stock by Category</h3>
+              <h3 data-i18n="stock_by_cat">Stock by Category</h3>
               <span class="muted" id="chartSubtitle">—</span>
             </div>
             <div id="chartArea"></div>
           </div>
           <div class="card">
             <div class="section-title">
-              <h3>Recent Activity</h3>
-              <span class="muted">Last 10</span>
+              <h3 data-i18n="recent_activity">Recent Activity</h3>
+              <span class="muted" data-i18n="last_10">Last 10</span>
             </div>
             <div id="activityList"></div>
           </div>
@@ -424,27 +424,27 @@
         <div class="toolbar">
           <div class="search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="Search items..." />
+            <input type="text" id="searchInput" data-i18n-ph="search_items" placeholder="Search items..." />
           </div>
-          <select id="categoryFilter"><option value="">All categories</option></select>
+          <select id="categoryFilter"><option value="" data-i18n="all_categories">All categories</option></select>
           <select id="stockFilter">
-            <option value="">All stock</option>
-            <option value="low">Low stock only</option>
-            <option value="out">Out of stock</option>
-            <option value="ok">In stock</option>
+            <option value="" data-i18n="all_stock">All stock</option>
+            <option value="low" data-i18n="low_only">Low stock only</option>
+            <option value="out" data-i18n="out_only">Out of stock</option>
+            <option value="ok" data-i18n="in_stock">In stock</option>
           </select>
         </div>
         <div class="table-wrap">
           <table id="invTable">
             <thead>
               <tr>
-                <th data-sort="name">Item <span class="arrow">↕</span></th>
-                <th data-sort="category">Category <span class="arrow">↕</span></th>
-                <th data-sort="quantity">Qty <span class="arrow">↕</span></th>
-                <th data-sort="unit">Unit <span class="arrow">↕</span></th>
-                <th data-sort="pricePerUnit">Price <span class="arrow">↕</span></th>
-                <th data-sort="totalValue">Total Value <span class="arrow">↕</span></th>
-                <th data-sort="updatedAt">Updated <span class="arrow">↕</span></th>
+                <th data-sort="name"><span data-i18n="col_item">Item</span> <span class="arrow">↕</span></th>
+                <th data-sort="category"><span data-i18n="col_category">Category</span> <span class="arrow">↕</span></th>
+                <th data-sort="quantity"><span data-i18n="col_qty">Qty</span> <span class="arrow">↕</span></th>
+                <th data-sort="unit"><span data-i18n="col_unit">Unit</span> <span class="arrow">↕</span></th>
+                <th data-sort="pricePerUnit"><span data-i18n="col_price">Price</span> <span class="arrow">↕</span></th>
+                <th data-sort="totalValue"><span data-i18n="col_total">Total Value</span> <span class="arrow">↕</span></th>
+                <th data-sort="updatedAt"><span data-i18n="col_updated">Updated</span> <span class="arrow">↕</span></th>
                 <th></th>
               </tr>
             </thead>
@@ -458,38 +458,38 @@
         <div class="grid stats" id="salesStats" style="margin-bottom:18px;"></div>
         <div class="grid row-2">
           <div class="card">
-            <div class="section-title"><h3>Record Transaction</h3></div>
+            <div class="section-title"><h3 data-i18n="record_tx">Record Transaction</h3></div>
             <div style="display:flex;gap:8px;margin-bottom:14px;">
-              <button class="btn primary" id="txTypeSell" data-type="sale" style="flex:1;">📤 Sale</button>
-              <button class="btn" id="txTypeRestock" data-type="restock" style="flex:1;">📥 Restock</button>
+              <button class="btn primary" id="txTypeSell" data-type="sale" data-i18n="sale" style="flex:1;">📤 Sale</button>
+              <button class="btn" id="txTypeRestock" data-type="restock" data-i18n="restock" style="flex:1;">📥 Restock</button>
             </div>
             <div style="display:grid;gap:12px;">
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;">Item *</label>
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;"><span data-i18n="item_label">Item</span> *</label>
                 <select id="tx_item"></select>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                 <div>
-                  <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;">Quantity *</label>
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;"><span data-i18n="qty_required">Quantity</span> *</label>
                   <input type="number" id="tx_qty" min="0" step="0.01" placeholder="0" />
                 </div>
                 <div>
                   <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;" id="tx_priceLabel">Price / Unit</label>
-                  <input type="number" id="tx_price" min="0" step="0.01" placeholder="auto" />
+                  <input type="number" id="tx_price" min="0" step="0.01" data-i18n-ph="auto" placeholder="auto" />
                 </div>
               </div>
               <div>
-                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;">Note (optional)</label>
-                <input type="text" id="tx_note" placeholder="Customer name, invoice #, etc." />
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;" data-i18n="note_opt">Note (optional)</label>
+                <input type="text" id="tx_note" data-i18n-ph="note_ph" placeholder="Customer name, invoice #, etc." />
               </div>
               <div id="tx_preview" style="padding:10px 12px;background:var(--row-hover);border-radius:10px;font-size:13px;color:var(--muted);"></div>
-              <button class="btn primary" id="tx_submit">Record</button>
+              <button class="btn primary" id="tx_submit" data-i18n="record">Record</button>
             </div>
           </div>
           <div class="card">
             <div class="section-title">
-              <h3>Transaction History</h3>
-              <button class="btn ghost" id="exportTxBtn" style="font-size:12px;padding:5px 10px;">Export CSV</button>
+              <h3 data-i18n="tx_history">Transaction History</h3>
+              <button class="btn ghost" id="exportTxBtn" data-i18n="export_csv" style="font-size:12px;padding:5px 10px;">Export CSV</button>
             </div>
             <div id="txList" style="max-height:480px;overflow:auto;"></div>
           </div>
@@ -500,33 +500,32 @@
       <section class="view" id="view-data">
         <div class="grid row-2">
           <div class="card">
-            <div class="section-title"><h3>Export</h3></div>
-            <p class="muted" style="margin:0 0 14px;font-size:13px;">Download all your inventory data.</p>
+            <div class="section-title"><h3 data-i18n="export_h">Export</h3></div>
+            <p class="muted" style="margin:0 0 14px;font-size:13px;" data-i18n="export_desc">Download all your inventory data.</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <button class="btn" id="exportCsvBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span>Export as CSV (Excel)</span>
+                <span data-i18n="export_csv_btn">Export as CSV (Excel)</span>
               </button>
               <button class="btn" id="exportJsonBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                <span>Export Full Backup (JSON)</span>
+                <span data-i18n="export_json_btn">Export Full Backup (JSON)</span>
               </button>
             </div>
           </div>
           <div class="card">
-            <div class="section-title"><h3>Import</h3></div>
-            <p class="muted" style="margin:0 0 14px;font-size:13px;">
-              CSV columns expected: <code>name, category, quantity, unit, pricePerUnit, notes</code>.
-              Extra columns are ignored. Importing JSON replaces all data.
+            <div class="section-title"><h3 data-i18n="import_h">Import</h3></div>
+            <p class="muted" style="margin:0 0 14px;font-size:13px;" data-i18n="import_desc">
+              CSV columns expected: name, category, quantity, unit, pricePerUnit, notes. Importing JSON replaces all data.
             </p>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <button class="btn" id="importCsvBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>Import CSV</span>
+                <span data-i18n="import_csv_btn">Import CSV</span>
               </button>
               <button class="btn" id="importJsonBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>Restore from JSON</span>
+                <span data-i18n="import_json_btn">Restore from JSON</span>
               </button>
               <input type="file" id="csvFile" accept=".csv,text/csv" class="file-input-hidden" />
               <input type="file" id="jsonFile" accept=".json,application/json" class="file-input-hidden" />
@@ -540,38 +539,48 @@
         <div class="card" style="max-width:640px;">
           <div class="setting-row">
             <div>
-              <div class="label">Dark mode</div>
-              <div class="desc">Switch between light and dark themes</div>
+              <div class="label" data-i18n="set_lang">Language</div>
+              <div class="desc" data-i18n="set_lang_d">Interface language</div>
+            </div>
+            <select id="langSelect" style="width:auto;min-width:160px;">
+              <option value="en">English</option>
+              <option value="id">Bahasa Indonesia</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div>
+              <div class="label" data-i18n="set_dark">Dark mode</div>
+              <div class="desc" data-i18n="set_dark_d">Switch between light and dark themes</div>
             </div>
             <div class="toggle" id="darkToggle"></div>
           </div>
           <div class="setting-row">
             <div>
-              <div class="label">Low stock threshold</div>
-              <div class="desc">Items at or below this quantity are flagged</div>
+              <div class="label" data-i18n="set_low">Low stock threshold</div>
+              <div class="desc" data-i18n="set_low_d">Items at or below this quantity are flagged</div>
             </div>
             <input type="number" id="lowStockInput" min="0" step="1" style="width:90px;" />
           </div>
           <div class="setting-row">
             <div>
-              <div class="label">Default currency symbol</div>
-              <div class="desc">Used in displays (e.g. Rp, $, €)</div>
+              <div class="label" data-i18n="set_cur">Default currency symbol</div>
+              <div class="desc" data-i18n="set_cur_d">Used in displays (e.g. Rp, $, €)</div>
             </div>
             <input type="text" id="currencyInput" maxlength="4" style="width:90px;text-align:center;" />
           </div>
           <div class="setting-row">
             <div>
-              <div class="label">Load 14 Mei 2026 stock data</div>
-              <div class="desc">Imports the full Minol/Beer/Rokok/Soft Drink/Snack list. Updates qty if item already exists.</div>
+              <div class="label" data-i18n="set_seed">Load 14 Mei 2026 stock data</div>
+              <div class="desc" data-i18n="set_seed_d">Imports the full Minol/Beer/Rokok/Soft Drink/Snack list. Updates qty if item already exists.</div>
             </div>
-            <button class="btn primary" id="loadSeedBtn">Import</button>
+            <button class="btn primary" id="loadSeedBtn" data-i18n="set_seed_btn">Import</button>
           </div>
           <div class="setting-row">
             <div>
-              <div class="label">Clear all data</div>
-              <div class="desc">Permanently deletes every item from this device</div>
+              <div class="label" data-i18n="set_clear">Clear all data</div>
+              <div class="desc" data-i18n="set_clear_d">Permanently deletes every item from this device</div>
             </div>
-            <button class="btn danger" id="clearDataBtn">Reset</button>
+            <button class="btn danger" id="clearDataBtn" data-i18n="set_clear_btn">Reset</button>
           </div>
         </div>
       </section>
@@ -583,27 +592,23 @@
 <nav class="bottom-nav" id="bottomNav">
   <button data-view="dashboard" class="active">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-    Home
+    <span data-i18n="bn_home">Home</span>
   </button>
   <button data-view="inventory">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-    Items
+    <span data-i18n="bn_items">Items</span>
   </button>
   <button data-view="sales">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-    Sales
-  </button>
-  <button data-view="sales">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-    Sales
+    <span data-i18n="bn_sales">Sales</span>
   </button>
   <button data-view="data">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-    Data
+    <span data-i18n="bn_data">Data</span>
   </button>
   <button data-view="settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Settings
+    <span data-i18n="bn_settings">Settings</span>
   </button>
 </nav>
 
@@ -611,40 +616,40 @@
 <div class="modal-backdrop" id="itemModal">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modalTitle">Add Item</h3>
+      <h3 id="modalTitle" data-i18n="add_item">Add Item</h3>
       <button class="icon-btn" id="closeModalBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="modal-body">
       <div class="full">
-        <label>Item Name *</label>
+        <label><span data-i18n="name_required">Item Name</span> *</label>
         <input type="text" id="f_name" placeholder="e.g. Cotton T-Shirt" />
       </div>
       <div class="full">
-        <label>Category *</label>
+        <label><span data-i18n="cat">Category</span> *</label>
         <div class="cat-row">
           <select id="f_category"></select>
           <button class="btn" id="addCatBtn" type="button" title="Add new category">+</button>
         </div>
       </div>
       <div>
-        <label>Stock Quantity *</label>
+        <label><span data-i18n="qty">Stock Quantity</span> *</label>
         <input type="number" id="f_quantity" step="0.01" min="0" placeholder="0" />
       </div>
       <div>
-        <label>Unit</label>
+        <label data-i18n="unit">Unit</label>
         <select id="f_unit">
           <option>pcs</option><option>kg</option><option>g</option><option>L</option><option>mL</option>
           <option>box</option><option>pack</option><option>m</option><option>set</option><option>unit</option>
         </select>
       </div>
       <div class="full">
-        <label>Price per Unit</label>
+        <label data-i18n="price_per_unit">Price per Unit</label>
         <input type="number" id="f_price" step="0.01" min="0" placeholder="0.00" />
       </div>
       <div class="full">
-        <label>Photo</label>
+        <label data-i18n="photo">Photo</label>
         <div class="photo-area">
           <div class="photo-preview" id="photoPreview">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--muted);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -652,28 +657,28 @@
           <div class="photo-actions">
             <button class="btn" id="cameraBtn" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              <span>Take Photo</span>
+              <span data-i18n="take_photo">Take Photo</span>
             </button>
             <button class="btn" id="uploadPhotoBtn" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span>Upload</span>
+              <span data-i18n="upload">Upload</span>
             </button>
-            <button class="btn ghost" id="removePhotoBtn" type="button" style="display:none;">Remove</button>
+            <button class="btn ghost" id="removePhotoBtn" type="button" data-i18n="remove" style="display:none;">Remove</button>
             <input type="file" id="photoFileInput" accept="image/*" class="file-input-hidden" />
             <input type="file" id="photoCameraInput" accept="image/*" capture="environment" class="file-input-hidden" />
           </div>
         </div>
       </div>
       <div class="full">
-        <label>Notes</label>
-        <textarea id="f_notes" placeholder="SKU, supplier, location, etc."></textarea>
+        <label data-i18n="notes">Notes</label>
+        <textarea id="f_notes" data-i18n-ph="notes_ph" placeholder="SKU, supplier, location, etc."></textarea>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn danger" id="deleteItemBtn" style="display:none;">Delete</button>
+      <button class="btn danger" id="deleteItemBtn" data-i18n="delete" style="display:none;">Delete</button>
       <div style="display:flex;gap:10px;margin-left:auto;">
-        <button class="btn" id="cancelBtn">Cancel</button>
-        <button class="btn primary" id="saveBtn">Save</button>
+        <button class="btn" id="cancelBtn" data-i18n="cancel">Cancel</button>
+        <button class="btn primary" id="saveBtn" data-i18n="save">Save</button>
       </div>
     </div>
   </div>
@@ -776,7 +781,99 @@ const SEED_2026_05_14 = {
     { c:'Snack', n:'Butterfly Peanuts Salted', q:6 },
   ],
 };
-const DEFAULT_SETTINGS = { dark: false, lowStockThreshold: 5, currency: 'Rp ' };
+const DEFAULT_SETTINGS = { dark: false, lowStockThreshold: 5, currency: 'Rp ', lang: 'en' };
+
+const I18N = {
+  en: {
+    nav_dashboard:'Dashboard', nav_inventory:'Inventory', nav_sales:'Sales', nav_data:'Import / Export', nav_settings:'Settings',
+    bn_home:'Home', bn_items:'Items', bn_sales:'Sales', bn_data:'Data', bn_settings:'Settings',
+    add_item:'Add Item', install_app:'Install App', install_banner:'📲 Install Stockly on your device for quick access', install:'Install',
+    stat_total_items:'Total Items', stat_total_items_sub:'unique products',
+    stat_total_stock:'Total Stock', stat_total_stock_sub:'units in storage',
+    stat_value:'Inventory Value', stat_value_sub:'estimated worth',
+    stat_low:'Low Stock', stat_low_sub_pre:'≤', stat_low_sub_post:'units',
+    stock_by_cat:'Stock by Category', recent_activity:'Recent Activity', last_10:'Last 10',
+    search_items:'Search items...', all_categories:'All categories', all_stock:'All stock',
+    low_only:'Low stock only', out_only:'Out of stock', in_stock:'In stock',
+    col_item:'Item', col_category:'Category', col_qty:'Qty', col_unit:'Unit', col_price:'Price', col_total:'Total Value', col_updated:'Updated',
+    edit_item:'Edit Item', name_required:'Item Name', cat:'Category', qty:'Stock Quantity', unit:'Unit', price_per_unit:'Price per Unit',
+    photo:'Photo', take_photo:'Take Photo', upload:'Upload', remove:'Remove', notes:'Notes', notes_ph:'SKU, supplier, location, etc.',
+    cancel:'Cancel', save:'Save', delete:'Delete',
+    record_tx:'Record Transaction', sale:'📤 Sale', restock:'📥 Restock', item_label:'Item', no_items_inv:'— No items in inventory —',
+    qty_required:'Quantity', sale_price_unit:'Sale Price / Unit', cost_unit:'Cost / Unit', auto:'auto',
+    note_opt:'Note (optional)', note_ph:'Customer name, invoice #, etc.',
+    record:'Record', record_sale:'Record Sale', record_restock:'Record Restock',
+    today_sales:'Today\'s Sales', tx_count:'transactions', today_rev:'Today\'s Revenue', gross:'gross',
+    alltime_rev:'All-Time Revenue', total_sales_sub:'total sales', units_sold:'Units Sold', alltime:'all time',
+    tx_history:'Transaction History', export_csv:'Export CSV', no_tx:'No transactions yet',
+    export_h:'Export', export_desc:'Download all your inventory data.', export_csv_btn:'Export as CSV (Excel)', export_json_btn:'Export Full Backup (JSON)',
+    import_h:'Import', import_desc:'CSV columns: name, category, quantity, unit, pricePerUnit, notes. Importing JSON replaces all data.',
+    import_csv_btn:'Import CSV', import_json_btn:'Restore from JSON',
+    set_dark:'Dark mode', set_dark_d:'Switch between light and dark themes',
+    set_lang:'Language', set_lang_d:'Interface language',
+    set_low:'Low stock threshold', set_low_d:'Items at or below this quantity are flagged',
+    set_cur:'Default currency symbol', set_cur_d:'Used in displays (e.g. Rp, $, €)',
+    set_seed:'Load 14 Mei 2026 stock data', set_seed_d:'Imports the full Minol/Beer/Rokok/Soft Drink/Snack list. Updates qty if item already exists.', set_seed_btn:'Import',
+    set_clear:'Clear all data', set_clear_d:'Permanently deletes every item from this device', set_clear_btn:'Reset',
+    empty_no_data:'No data yet — add your first item.', empty_no_act:'No activity yet',
+    empty_no_match:'No items match your filter', empty_inv:'Your inventory is empty — click "Add Item" to start',
+    placeholder_select_item:'Select an item to preview the change.',
+    stock:'Stock', exceeds:'⚠️ exceeds available stock',
+    sold_label:'Sold', restocked_label:'Restocked',
+    act_added:'was added', act_updated:'was updated', act_removed:'was removed',
+    saved:'Saved', deleted:'Item deleted', reverted:'Reverted',
+  },
+  id: {
+    nav_dashboard:'Beranda', nav_inventory:'Inventaris', nav_sales:'Penjualan', nav_data:'Impor / Ekspor', nav_settings:'Pengaturan',
+    bn_home:'Beranda', bn_items:'Stok', bn_sales:'Jualan', bn_data:'Data', bn_settings:'Atur',
+    add_item:'Tambah Item', install_app:'Install Aplikasi', install_banner:'📲 Install Stockly di perangkatmu untuk akses cepat', install:'Install',
+    stat_total_items:'Total Item', stat_total_items_sub:'produk unik',
+    stat_total_stock:'Total Stok', stat_total_stock_sub:'unit tersimpan',
+    stat_value:'Nilai Inventaris', stat_value_sub:'estimasi nilai',
+    stat_low:'Stok Rendah', stat_low_sub_pre:'≤', stat_low_sub_post:'unit',
+    stock_by_cat:'Stok per Kategori', recent_activity:'Aktivitas Terbaru', last_10:'10 Terakhir',
+    search_items:'Cari item...', all_categories:'Semua kategori', all_stock:'Semua stok',
+    low_only:'Hanya stok rendah', out_only:'Habis', in_stock:'Tersedia',
+    col_item:'Item', col_category:'Kategori', col_qty:'Jml', col_unit:'Unit', col_price:'Harga', col_total:'Total Nilai', col_updated:'Diperbarui',
+    edit_item:'Edit Item', name_required:'Nama Item', cat:'Kategori', qty:'Jumlah Stok', unit:'Unit', price_per_unit:'Harga per Unit',
+    photo:'Foto', take_photo:'Ambil Foto', upload:'Unggah', remove:'Hapus', notes:'Catatan', notes_ph:'SKU, supplier, lokasi, dll.',
+    cancel:'Batal', save:'Simpan', delete:'Hapus',
+    record_tx:'Catat Transaksi', sale:'📤 Jual', restock:'📥 Stok Ulang', item_label:'Item', no_items_inv:'— Tidak ada item di inventaris —',
+    qty_required:'Jumlah', sale_price_unit:'Harga Jual / Unit', cost_unit:'Biaya / Unit', auto:'otomatis',
+    note_opt:'Catatan (opsional)', note_ph:'Nama pelanggan, no. invoice, dll.',
+    record:'Catat', record_sale:'Catat Penjualan', record_restock:'Catat Stok Ulang',
+    today_sales:'Penjualan Hari Ini', tx_count:'transaksi', today_rev:'Pendapatan Hari Ini', gross:'kotor',
+    alltime_rev:'Total Pendapatan', total_sales_sub:'total penjualan', units_sold:'Unit Terjual', alltime:'sepanjang waktu',
+    tx_history:'Riwayat Transaksi', export_csv:'Ekspor CSV', no_tx:'Belum ada transaksi',
+    export_h:'Ekspor', export_desc:'Unduh semua data inventaris.', export_csv_btn:'Ekspor sebagai CSV (Excel)', export_json_btn:'Ekspor Cadangan Penuh (JSON)',
+    import_h:'Impor', import_desc:'Kolom CSV: name, category, quantity, unit, pricePerUnit, notes. Impor JSON akan mengganti semua data.',
+    import_csv_btn:'Impor CSV', import_json_btn:'Pulihkan dari JSON',
+    set_dark:'Mode Gelap', set_dark_d:'Beralih antara tema terang dan gelap',
+    set_lang:'Bahasa', set_lang_d:'Bahasa antarmuka',
+    set_low:'Batas stok rendah', set_low_d:'Item dengan jumlah ini atau kurang akan ditandai',
+    set_cur:'Simbol mata uang', set_cur_d:'Digunakan dalam tampilan (mis. Rp, $, €)',
+    set_seed:'Muat data stok 14 Mei 2026', set_seed_d:'Impor daftar lengkap Minol/Beer/Rokok/Soft Drink/Snack. Memperbarui jumlah jika item sudah ada.', set_seed_btn:'Impor',
+    set_clear:'Hapus semua data', set_clear_d:'Menghapus permanen semua item dari perangkat ini', set_clear_btn:'Reset',
+    empty_no_data:'Belum ada data — tambah item pertamamu.', empty_no_act:'Belum ada aktivitas',
+    empty_no_match:'Tidak ada item yang cocok dengan filter', empty_inv:'Inventaris kosong — klik "Tambah Item" untuk mulai',
+    placeholder_select_item:'Pilih item untuk melihat perubahan.',
+    stock:'Stok', exceeds:'⚠️ melebihi stok tersedia',
+    sold_label:'Terjual', restocked_label:'Di-restock',
+    act_added:'ditambahkan', act_updated:'diperbarui', act_removed:'dihapus',
+    saved:'Tersimpan', deleted:'Item dihapus', reverted:'Dikembalikan',
+  },
+};
+function t(key) { return (I18N[state?.settings?.lang || 'en'] || I18N.en)[key] ?? key; }
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  // Refresh dynamic views
+  if (state.view === 'dashboard') renderDashboard();
+  else if (state.view === 'inventory') renderInventory();
+  else if (state.view === 'sales') { setTxType(state.txType); renderSales(); }
+  // Top title
+  $('#viewTitle').textContent = t('nav_' + (state.view==='data'?'data':state.view));
+}
 
 const PALETTE = ['#1a56db','#2563eb','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#84cc16','#f97316'];
 
@@ -855,7 +952,7 @@ function setView(v) {
   $$('.view').forEach(el => el.classList.toggle('active', el.id === 'view-' + v));
   $$('#sideNav button, #bottomNav button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
   $('#viewTitle').textContent = ({
-    dashboard: 'Dashboard', inventory: 'Inventory', sales: 'Sales', data: 'Import / Export', settings: 'Settings'
+    dashboard: t('nav_dashboard'), inventory: t('nav_inventory'), sales: t('nav_sales'), data: t('nav_data'), settings: t('nav_settings')
   })[v];
   if (v === 'dashboard') renderDashboard();
   if (v === 'inventory') renderInventory();
@@ -868,14 +965,15 @@ function renderSales() {
   const sel = $('#tx_item');
   const cur = sel.value;
   if (!state.items.length) {
-    sel.innerHTML = '<option value="">— No items in inventory —</option>';
+    sel.innerHTML = '<option value="">' + t('no_items_inv') + '</option>';
     sel.disabled = true;
     $('#tx_submit').disabled = true;
   } else {
     sel.disabled = false;
     $('#tx_submit').disabled = false;
+    const inStock = state.settings.lang==='id' ? 'tersisa' : 'in stock';
     sel.innerHTML = state.items.map(i =>
-      `<option value="${i.id}">${escapeHtml(i.name)} — ${fmtNum(Number(i.quantity||0))} ${escapeHtml(i.unit||'')} in stock</option>`
+      `<option value="${i.id}">${escapeHtml(i.name)} — ${fmtNum(Number(i.quantity||0))} ${escapeHtml(i.unit||'')} ${inStock}</option>`
     ).join('');
     if (cur && state.items.find(x => x.id === cur)) sel.value = cur;
   }
@@ -891,10 +989,10 @@ function renderSales() {
   const totalSold = sales.reduce((s,t) => s + t.qty, 0);
 
   $('#salesStats').innerHTML = [
-    { label: "Today's Sales", value: fmtNum(todaySales.length), sub: 'transactions' },
-    { label: "Today's Revenue", value: fmtMoney(todayRevenue), sub: 'gross' },
-    { label: 'All-Time Revenue', value: fmtMoney(totalRevenue), sub: fmtNum(sales.length) + ' total sales' },
-    { label: 'Units Sold', value: fmtNum(Math.round(totalSold*100)/100), sub: 'all time' },
+    { label: t('today_sales'), value: fmtNum(todaySales.length), sub: t('tx_count') },
+    { label: t('today_rev'), value: fmtMoney(todayRevenue), sub: t('gross') },
+    { label: t('alltime_rev'), value: fmtMoney(totalRevenue), sub: fmtNum(sales.length) + ' ' + t('total_sales_sub') },
+    { label: t('units_sold'), value: fmtNum(Math.round(totalSold*100)/100), sub: t('alltime') },
   ].map(s => `
     <div class="card stat-card">
       <div class="label">${s.label}</div>
@@ -905,7 +1003,7 @@ function renderSales() {
   // History
   const list = $('#txList');
   if (!state.transactions.length) {
-    list.innerHTML = `<div class="empty">No transactions yet</div>`;
+    list.innerHTML = `<div class="empty">${t('no_tx')}</div>`;
   } else {
     list.innerHTML = state.transactions.slice(0, 50).map(t => {
       const isSale = t.type === 'sale';
@@ -939,19 +1037,19 @@ function updateTxPreview() {
   const item = state.items.find(x => x.id === id);
   const qty = parseFloat($('#tx_qty').value) || 0;
   const preview = $('#tx_preview');
-  if (!item) { preview.textContent = 'Select an item to preview the change.'; return; }
+  if (!item) { preview.textContent = t('placeholder_select_item'); return; }
   const cur = Number(item.quantity || 0);
   const newQty = state.txType === 'sale' ? cur - qty : cur + qty;
   const warn = state.txType === 'sale' && qty > cur;
-  preview.innerHTML = `Stock: <strong style="color:var(--text);">${fmtNum(cur)}</strong> → <strong style="color:${warn?'var(--danger)':'var(--accent)'};">${fmtNum(newQty)}</strong> ${escapeHtml(item.unit||'')}${warn ? ' ⚠️ exceeds available stock' : ''}`;
+  preview.innerHTML = `${t('stock')}: <strong style="color:var(--text);">${fmtNum(cur)}</strong> → <strong style="color:${warn?'var(--danger)':'var(--accent)'};">${fmtNum(newQty)}</strong> ${escapeHtml(item.unit||'')}${warn ? ' ' + t('exceeds') : ''}`;
 }
 
 function setTxType(type) {
   state.txType = type;
   $('#txTypeSell').classList.toggle('primary', type === 'sale');
   $('#txTypeRestock').classList.toggle('primary', type === 'restock');
-  $('#tx_priceLabel').textContent = type === 'sale' ? 'Sale Price / Unit' : 'Cost / Unit';
-  $('#tx_submit').textContent = type === 'sale' ? 'Record Sale' : 'Record Restock';
+  $('#tx_priceLabel').textContent = type === 'sale' ? t('sale_price_unit') : t('cost_unit');
+  $('#tx_submit').textContent = type === 'sale' ? t('record_sale') : t('record_restock');
   updateTxPreview();
 }
 
@@ -1078,10 +1176,10 @@ function renderDashboard() {
   const lowCount = items.filter(i => Number(i.quantity||0) <= state.settings.lowStockThreshold).length;
 
   const stats = [
-    { label: 'Total Items', value: fmtNum(totalItems), sub: 'unique products', icon: 'box' },
-    { label: 'Total Stock', value: fmtNum(Math.round(totalQty*100)/100), sub: 'units in storage', icon: 'layers' },
-    { label: 'Inventory Value', value: fmtMoney(totalVal), sub: 'estimated worth', icon: 'dollar' },
-    { label: 'Low Stock', value: fmtNum(lowCount), sub: '≤ ' + state.settings.lowStockThreshold + ' units', icon: 'alert', warn: lowCount > 0 },
+    { label: t('stat_total_items'), value: fmtNum(totalItems), sub: t('stat_total_items_sub'), icon: 'box' },
+    { label: t('stat_total_stock'), value: fmtNum(Math.round(totalQty*100)/100), sub: t('stat_total_stock_sub'), icon: 'layers' },
+    { label: t('stat_value'), value: fmtMoney(totalVal), sub: t('stat_value_sub'), icon: 'dollar' },
+    { label: t('stat_low'), value: fmtNum(lowCount), sub: t('stat_low_sub_pre') + ' ' + state.settings.lowStockThreshold + ' ' + t('stat_low_sub_post'), icon: 'alert', warn: lowCount > 0 },
   ];
 
   const icons = {
@@ -1108,7 +1206,7 @@ function renderChart() {
   const area = $('#chartArea');
   const items = state.items;
   if (!items.length) {
-    area.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><div>No data yet — add your first item.</div></div>`;
+    area.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><div>${t('empty_no_data')}</div></div>`;
     $('#chartSubtitle').textContent = '—';
     return;
   }
@@ -1119,7 +1217,7 @@ function renderChart() {
   });
   const entries = Object.entries(map).sort((a,b) => b[1]-a[1]);
   const total = entries.reduce((s,[,v]) => s+v, 0) || 1;
-  $('#chartSubtitle').textContent = entries.length + ' categories · ' + fmtNum(Math.round(total)) + ' units';
+  $('#chartSubtitle').textContent = entries.length + (state.settings.lang==='id' ? ' kategori · ' : ' categories · ') + fmtNum(Math.round(total)) + (state.settings.lang==='id' ? ' unit' : ' units');
 
   // Donut SVG
   const size = 200, cx = size/2, cy = size/2, r = 78, ir = 50;
@@ -1142,7 +1240,7 @@ function renderChart() {
     <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
       ${slices.map(s => `<path d="${s.d}" fill="${s.color}"><title>${escapeHtml(s.name)}: ${fmtNum(s.val)} (${s.pct}%)</title></path>`).join('')}
       <text x="${cx}" y="${cy-4}" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">${fmtNum(Math.round(total))}</text>
-      <text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">total units</text>
+      <text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="11" fill="currentColor" opacity=".55">${state.settings.lang==='id' ? 'total unit' : 'total units'}</text>
     </svg>`;
   const legend = `<div class="legend">${slices.map(s => `
     <div class="legend-item">
@@ -1158,13 +1256,13 @@ function renderActivity() {
   const list = $('#activityList');
   const acts = state.activity.slice(0, 10);
   if (!acts.length) {
-    list.innerHTML = `<div class="empty">No activity yet</div>`;
+    list.innerHTML = `<div class="empty">${t('empty_no_act')}</div>`;
     return;
   }
   list.innerHTML = `<div class="activity">${acts.map(a => `
     <div class="activity-item">
       <span class="activity-dot ${a.action==='edit'?'edit':''}"></span>
-      <div class="activity-text"><strong>${escapeHtml(a.name)}</strong> was ${a.action==='add'?'added':a.action==='edit'?'updated':'removed'}</div>
+      <div class="activity-text"><strong>${escapeHtml(a.name)}</strong> ${a.action==='add'?t('act_added'):a.action==='edit'?t('act_updated'):t('act_removed')}</div>
       <span class="activity-time">${timeAgo(a.ts)}</span>
     </div>`).join('')}</div>`;
 }
@@ -1205,7 +1303,7 @@ function renderInventory() {
   // Update category filter
   const catSel = $('#categoryFilter');
   const cur = catSel.value;
-  catSel.innerHTML = '<option value="">All categories</option>' +
+  catSel.innerHTML = '<option value="">' + t('all_categories') + '</option>' +
     state.categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
   catSel.value = cur;
 
@@ -1214,7 +1312,7 @@ function renderInventory() {
 
   if (!lst.length) {
     body.innerHTML = `<tr><td colspan="8"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-      <div>${state.items.length ? 'No items match your filter' : 'Your inventory is empty — click "Add Item" to start'}</div></div></td></tr>`;
+      <div>${state.items.length ? t('empty_no_match') : t('empty_inv')}</div></div></td></tr>`;
   } else {
     body.innerHTML = lst.map(i => {
       const qty = Number(i.quantity||0);
@@ -1284,7 +1382,7 @@ function openModal(id = null) {
   refreshCategorySelect();
 
   const item = id ? state.items.find(x => x.id === id) : null;
-  $('#modalTitle').textContent = item ? 'Edit Item' : 'Add Item';
+  $('#modalTitle').textContent = item ? t('edit_item') : t('add_item');
   $('#deleteItemBtn').style.display = item ? 'inline-flex' : 'none';
 
   $('#f_name').value = item?.name || '';
@@ -1682,6 +1780,12 @@ function init() {
   $('#jsonFile').addEventListener('change', e => { if (e.target.files[0]) { importJSONFile(e.target.files[0]); e.target.value=''; } });
 
   // Settings
+  $('#langSelect').value = state.settings.lang || 'en';
+  $('#langSelect').addEventListener('change', e => {
+    state.settings.lang = e.target.value;
+    save(SETTINGS_KEY, state.settings);
+    applyI18n();
+  });
   $('#darkToggle').addEventListener('click', toggleDark);
   $('#lowStockInput').value = state.settings.lowStockThreshold;
   $('#lowStockInput').addEventListener('change', e => {
@@ -1718,6 +1822,7 @@ function init() {
   });
 
   setView('dashboard');
+  applyI18n();
 }
 
 function toggleDark() {
