@@ -143,6 +143,24 @@
   .loc-pill:hover { background: var(--row-hover); color: var(--text); }
   .loc-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
   .loc-pill.active:hover { background: var(--accent-2); }
+  .pin-dot {
+    width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border);
+    transition: all .15s;
+  }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+  .pin-key {
+    width: 72px; height: 72px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--panel); color: var(--text); font-size: 24px; font-weight: 500;
+    transition: all .1s; user-select: none;
+  }
+  .pin-key:hover { background: var(--row-hover); }
+  .pin-key:active { transform: scale(.94); background: var(--accent-soft); }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+  .pin-shake { animation: shake .4s; }
 
   /* Cards */
   .grid { display: grid; gap: 18px; }
@@ -206,7 +224,7 @@
 
   /* Table */
   .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); background: var(--panel); }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 760px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 360px; }
   thead th {
     text-align: left; padding: 12px 14px; font-weight: 600; color: var(--muted);
     border-bottom: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: .03em;
@@ -349,6 +367,25 @@
 </style>
 </head>
 <body>
+
+<!-- Passcode lockscreen -->
+<div id="lockScreen" style="position:fixed;inset:0;z-index:200;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+  <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#3b82f6);display:grid;place-items:center;color:white;font-weight:800;font-size:28px;margin-bottom:18px;">S</div>
+  <h2 style="margin:0 0 6px;font-size:22px;font-weight:700;">Stockly</h2>
+  <div style="color:var(--muted);font-size:13.5px;margin-bottom:22px;" data-i18n="lock_enter">Enter passcode to continue</div>
+  <div id="pinDots" style="display:flex;gap:14px;margin-bottom:20px;">
+    <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+  </div>
+  <input id="pinInput" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autofocus style="position:absolute;opacity:0;left:-9999px;" />
+  <div id="pinError" style="color:var(--danger);font-size:13px;height:18px;margin-bottom:8px;"></div>
+  <div class="pin-keypad" id="pinKeypad" style="display:grid;grid-template-columns:repeat(3,72px);gap:14px;">
+    <button class="pin-key" data-d="1">1</button><button class="pin-key" data-d="2">2</button><button class="pin-key" data-d="3">3</button>
+    <button class="pin-key" data-d="4">4</button><button class="pin-key" data-d="5">5</button><button class="pin-key" data-d="6">6</button>
+    <button class="pin-key" data-d="7">7</button><button class="pin-key" data-d="8">8</button><button class="pin-key" data-d="9">9</button>
+    <button class="pin-key empty" disabled style="visibility:hidden;"></button><button class="pin-key" data-d="0">0</button><button class="pin-key" data-d="back">⌫</button>
+  </div>
+</div>
+
 <div class="app">
   <!-- Sidebar -->
   <aside class="sidebar">
@@ -462,10 +499,7 @@
             <thead>
               <tr>
                 <th data-sort="name"><span data-i18n="col_item">Item</span> <span class="arrow">↕</span></th>
-                <th data-sort="category"><span data-i18n="col_category">Category</span> <span class="arrow">↕</span></th>
                 <th data-sort="quantity"><span data-i18n="col_qty">Qty</span> <span class="arrow">↕</span></th>
-                <th data-sort="unit"><span data-i18n="col_unit">Unit</span> <span class="arrow">↕</span></th>
-                <th data-sort="updatedAt"><span data-i18n="col_updated">Updated</span> <span class="arrow">↕</span></th>
                 <th></th>
               </tr>
             </thead>
@@ -685,30 +719,10 @@
         <div id="loc_total" style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right;"></div>
       </div>
       <div class="full">
-        <label data-i18n="photo">Photo</label>
-        <div class="photo-area">
-          <div class="photo-preview" id="photoPreview">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--muted);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <div class="photo-actions">
-            <button class="btn" id="cameraBtn" type="button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              <span data-i18n="take_photo">Take Photo</span>
-            </button>
-            <button class="btn" id="uploadPhotoBtn" type="button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span data-i18n="upload">Upload</span>
-            </button>
-            <button class="btn ghost" id="removePhotoBtn" type="button" data-i18n="remove" style="display:none;">Remove</button>
-            <input type="file" id="photoFileInput" accept="image/*" class="file-input-hidden" />
-            <input type="file" id="photoCameraInput" accept="image/*" capture="environment" class="file-input-hidden" />
-          </div>
-        </div>
-      </div>
-      <div class="full">
         <label data-i18n="notes">Notes</label>
         <textarea id="f_notes" data-i18n-ph="notes_ph" placeholder="SKU, supplier, location, etc."></textarea>
       </div>
+      <div class="full" id="modalDates"></div>
     </div>
     <div class="modal-footer">
       <button class="btn danger" id="deleteItemBtn" data-i18n="delete" style="display:none;">Delete</button>
@@ -932,7 +946,6 @@ const state = {
   sortKey: 'updatedAt',
   sortDir: 'desc',
   editingId: null,
-  photoData: null,
 };
 
 /* -------- Cloud sync (Vercel KV via /api/state) -------- */
@@ -1113,7 +1126,7 @@ function renderSales() {
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0;">
-          <div style="font-size:11px;color:var(--muted);">${timeAgo(t.ts)}</div>
+          <div style="font-size:11px;color:var(--muted);">${new Date(t.ts).toLocaleString(state.settings.lang==='id'?'id-ID':'en-US', { dateStyle: 'short', timeStyle: 'short' })}</div>
           <button class="icon-btn" data-tx="${t.id}" title="Undo" style="margin-top:2px;width:26px;height:26px;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
           </button>
@@ -1408,8 +1421,6 @@ function renderDashboard() {
   const lowCount = items.filter(i => Number(i.quantity||0) <= state.settings.lowStockThreshold).length;
 
   const stats = [
-    { label: t('stat_total_items'), value: fmtNum(totalItems), sub: t('stat_total_items_sub'), icon: 'box' },
-    { label: t('stat_total_stock'), value: fmtNum(Math.round(totalQty*100)/100), sub: t('stat_total_stock_sub'), icon: 'layers' },
     { label: t('stat_low'), value: fmtNum(lowCount), sub: t('stat_low_sub_pre') + ' ' + state.settings.lowStockThreshold + ' ' + t('stat_low_sub_post'), icon: 'alert', warn: lowCount > 0 },
   ];
 
@@ -1494,7 +1505,7 @@ function renderActivity() {
     <div class="activity-item">
       <span class="activity-dot ${a.action==='edit'?'edit':''}"></span>
       <div class="activity-text"><strong>${escapeHtml(a.name)}</strong> ${a.action==='add'?t('act_added'):a.action==='edit'?t('act_updated'):t('act_removed')}</div>
-      <span class="activity-time">${timeAgo(a.ts)}</span>
+      <span class="activity-time">${new Date(a.ts).toLocaleString(state.settings.lang==='id'?'id-ID':'en-US', { dateStyle: 'short', timeStyle: 'short' })}</span>
     </div>`).join('')}</div>`;
 }
 
@@ -1536,7 +1547,7 @@ function renderInventory() {
   const body = $('#invBody');
 
   if (!lst.length) {
-    body.innerHTML = `<tr><td colspan="6"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    body.innerHTML = `<tr><td colspan="3"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       <div>${state.items.length ? t('empty_no_match') : t('empty_inv')}</div></div></td></tr>`;
   } else {
     body.innerHTML = lst.map(i => {
@@ -1545,15 +1556,9 @@ function renderInventory() {
         ? Number(i.locations?.[state.locFilter] || 0)
         : Number(i.quantity || 0);
       const isLow = qty <= state.settings.lowStockThreshold;
-      const thumb = i.photo
-        ? `<img class="thumb" src="${i.photo}" alt="" />`
-        : `<span class="thumb placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>`;
       return `<tr class="${isLow?'lowstock':''}" data-id="${i.id}">
-        <td>${thumb}<strong>${escapeHtml(i.name)}</strong>${isLow?'<span class="badge-low">'+(qty===0?'OUT':'LOW')+'</span>':''}</td>
-        <td><span class="pill">${escapeHtml(i.category||'—')}</span></td>
+        <td><strong>${escapeHtml(i.name)}</strong>${isLow?'<span class="badge-low">'+(qty===0?'OUT':'LOW')+'</span>':''}</td>
         <td>${fmtNum(qty)}</td>
-        <td>${escapeHtml(i.unit||'')}</td>
-        <td style="color:var(--muted);font-size:12px;">${timeAgo(i.updatedAt||i.createdAt||Date.now())}</td>
         <td><div class="row-actions">
           <button class="edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
           <button class="del" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
@@ -1603,7 +1608,6 @@ function refreshCategorySelect() {
 
 function openModal(id = null) {
   state.editingId = id;
-  state.photoData = null;
   refreshCategorySelect();
 
   const item = id ? state.items.find(x => x.id === id) : null;
@@ -1619,8 +1623,7 @@ function openModal(id = null) {
   const locs = item ? (ensureLocations(item), item.locations) : { SP:0, SK:0, PLT:0, PRM:0, GD:0 };
   LOCATIONS.forEach(loc => { $('#f_loc_' + loc).value = locs[loc] ?? 0; });
   updateLocTotal();
-  state.photoData = item?.photo || null;
-  updatePhotoPreview();
+  updateModalDates(item);
 
   $('#itemModal').classList.add('open');
   setTimeout(() => $('#f_name').focus(), 50);
@@ -1629,7 +1632,6 @@ function openModal(id = null) {
 function closeModal() {
   $('#itemModal').classList.remove('open');
   state.editingId = null;
-  state.photoData = null;
 }
 
 function updateLocTotal() {
@@ -1638,40 +1640,16 @@ function updateLocTotal() {
   if (el) el.textContent = t('loc_total') + ': ' + fmtNum(sum);
 }
 
-function updatePhotoPreview() {
-  const p = $('#photoPreview');
-  if (state.photoData) {
-    p.innerHTML = `<img src="${state.photoData}" alt="" />`;
-    $('#removePhotoBtn').style.display = 'inline-flex';
-  } else {
-    p.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--muted);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
-    $('#removePhotoBtn').style.display = 'none';
-  }
-}
-
-function readPhoto(file) {
-  if (!file) return;
-  if (file.size > 4 * 1024 * 1024) { toast('Image too large (max 4MB)'); return; }
-  // Resize to max 800px to keep localStorage manageable
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      const max = 800;
-      let { width, height } = img;
-      if (width > max || height > max) {
-        const r = Math.min(max/width, max/height);
-        width = Math.round(width*r); height = Math.round(height*r);
-      }
-      const c = document.createElement('canvas');
-      c.width = width; c.height = height;
-      c.getContext('2d').drawImage(img, 0, 0, width, height);
-      state.photoData = c.toDataURL('image/jpeg', 0.82);
-      updatePhotoPreview();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
+function updateModalDates(item) {
+  const wrap = $('#modalDates');
+  if (!wrap) return;
+  if (!item) { wrap.innerHTML = ''; return; }
+  const fmtDate = ts => new Date(ts).toLocaleString(state.settings.lang === 'id' ? 'id-ID' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
+  const created = item.createdAt ? fmtDate(item.createdAt) : '—';
+  const updated = item.updatedAt ? fmtDate(item.updatedAt) : '—';
+  const lblCreated = state.settings.lang === 'id' ? 'Dibuat' : 'Created';
+  const lblUpdated = state.settings.lang === 'id' ? 'Terakhir diperbarui' : 'Last updated';
+  wrap.innerHTML = `<div style="font-size:11.5px;color:var(--muted);line-height:1.6;">📅 ${lblCreated}: ${created}<br>✏️ ${lblUpdated}: ${updated}</div>`;
 }
 
 function saveItem() {
@@ -1690,7 +1668,6 @@ function saveItem() {
       return acc;
     }, {}),
     notes: $('#f_notes').value.trim(),
-    photo: state.photoData,
     updatedAt: Date.now(),
   };
 
@@ -1972,12 +1949,6 @@ function init() {
     }
   });
 
-  // Photo
-  $('#cameraBtn').addEventListener('click', () => $('#photoCameraInput').click());
-  $('#uploadPhotoBtn').addEventListener('click', () => $('#photoFileInput').click());
-  $('#removePhotoBtn').addEventListener('click', () => { state.photoData = null; updatePhotoPreview(); });
-  $('#photoFileInput').addEventListener('change', e => readPhoto(e.target.files[0]));
-  $('#photoCameraInput').addEventListener('change', e => readPhoto(e.target.files[0]));
   LOCATIONS.forEach(loc => $('#f_loc_' + loc).addEventListener('input', updateLocTotal));
 
   // Add category
@@ -2056,8 +2027,8 @@ function init() {
   });
   $('#loadSeedBtn').addEventListener('click', loadSeedData);
   $('#clearDataBtn').addEventListener('click', () => {
+    if (!askPasscode()) { toast(state.settings.lang === 'id' ? 'Kode salah' : 'Wrong passcode'); return; }
     if (!confirm('Delete ALL items and reset settings? This cannot be undone.')) return;
-    if (!confirm('Are you absolutely sure? This is permanent.')) return;
     state.items = []; state.activity = []; state.categories = [...DEFAULT_CATEGORIES];
     state.settings = { ...DEFAULT_SETTINGS };
     persistAll();
@@ -2141,7 +2112,69 @@ async function triggerInstall() {
   $('#installBanner').classList.remove('show');
 }
 
-document.addEventListener('DOMContentLoaded', init);
+/* -------- Passcode lockscreen -------- */
+const APP_PASSCODE = '8080';
+let pinBuffer = '';
+
+function setupLockscreen() {
+  if (sessionStorage.getItem('stockly_unlocked') === '1') {
+    $('#lockScreen').style.display = 'none';
+    init();
+    return;
+  }
+  // Wire up keypad
+  $$('#pinKeypad .pin-key').forEach(btn => {
+    btn.addEventListener('click', () => handlePinKey(btn.dataset.d));
+  });
+  // Hardware keyboard support
+  document.addEventListener('keydown', e => {
+    if ($('#lockScreen').style.display === 'none') return;
+    if (e.key >= '0' && e.key <= '9') handlePinKey(e.key);
+    else if (e.key === 'Backspace') handlePinKey('back');
+  });
+}
+
+function handlePinKey(d) {
+  if (d === 'back') {
+    pinBuffer = pinBuffer.slice(0, -1);
+  } else if (pinBuffer.length < 4 && /^\d$/.test(d)) {
+    pinBuffer += d;
+  }
+  renderPinDots();
+  if (pinBuffer.length === 4) checkPin();
+}
+
+function renderPinDots() {
+  $$('#pinDots .pin-dot').forEach((dot, i) => {
+    dot.classList.toggle('filled', i < pinBuffer.length);
+  });
+  $('#pinError').textContent = '';
+}
+
+function checkPin() {
+  if (pinBuffer === APP_PASSCODE) {
+    sessionStorage.setItem('stockly_unlocked', '1');
+    $('#lockScreen').style.display = 'none';
+    pinBuffer = '';
+    init();
+  } else {
+    const dots = $('#pinDots');
+    dots.classList.add('pin-shake');
+    $('#pinError').textContent = state.settings.lang === 'id' ? 'Kode salah' : 'Wrong passcode';
+    setTimeout(() => {
+      dots.classList.remove('pin-shake');
+      pinBuffer = '';
+      renderPinDots();
+    }, 450);
+  }
+}
+
+function askPasscode() {
+  const code = prompt(state.settings.lang === 'id' ? 'Masukkan kode 4-digit untuk konfirmasi:' : 'Enter 4-digit passcode to confirm:');
+  return code === APP_PASSCODE;
+}
+
+document.addEventListener('DOMContentLoaded', setupLockscreen);
 </script>
 </body>
 </html>
