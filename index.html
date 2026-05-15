@@ -765,8 +765,7 @@ function setView(v) {
   $$('.view').forEach(el => el.classList.toggle('active', el.id === 'view-' + v));
   $$('#sideNav button, #bottomNav button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
   $('#viewTitle').textContent = ({
-    dashboard: 'Dashboard', inventory: 'Inventory', data: 'Import / Export', settings: 'Settings'
-    sales: 'Sales',
+    dashboard: 'Dashboard', inventory: 'Inventory', sales: 'Sales', data: 'Import / Export', settings: 'Settings'
   })[v];
   if (v === 'dashboard') renderDashboard();
   if (v === 'inventory') renderInventory();
