@@ -498,6 +498,27 @@
 
       <!-- Data view -->
       <section class="view" id="view-data">
+        <div class="card" style="margin-bottom:18px;">
+          <div class="section-title"><h3 data-i18n="report_h">Report</h3></div>
+          <p class="muted" style="margin:0 0 14px;font-size:13px;" data-i18n="report_d">Generate a clean text summary of sales, restocks, and current stock.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+            <button class="btn primary" data-range="today" data-i18n="range_today">Today</button>
+            <button class="btn" data-range="7d" data-i18n="range_7d">Last 7 days</button>
+            <button class="btn" data-range="30d" data-i18n="range_30d">Last 30 days</button>
+            <button class="btn" data-range="all" data-i18n="range_all">All time</button>
+          </div>
+          <textarea id="reportOutput" readonly style="width:100%;min-height:280px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;white-space:pre;"></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn primary" id="copyReportBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span data-i18n="copy">Copy</span>
+            </button>
+            <button class="btn" id="shareReportBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <span data-i18n="share">Share</span>
+            </button>
+          </div>
+        </div>
         <div class="grid row-2">
           <div class="card">
             <div class="section-title"><h3 data-i18n="export_h">Export</h3></div>
@@ -822,6 +843,16 @@ const I18N = {
     sold_label:'Sold', restocked_label:'Restocked',
     act_added:'was added', act_updated:'was updated', act_removed:'was removed',
     saved:'Saved', deleted:'Item deleted', reverted:'Reverted',
+    report_h:'Report', report_d:'Generate a clean text summary of sales, restocks, and current stock.',
+    range_today:'Today', range_7d:'Last 7 days', range_30d:'Last 30 days', range_all:'All time',
+    generate:'Generate Report', copy:'Copy', copied:'Copied to clipboard', share:'Share',
+    rep_title:'STOCKLY REPORT', rep_period:'Period', rep_summary:'SUMMARY',
+    rep_total_sales:'Total Sales', rep_total_rev:'Total Revenue', rep_total_restock:'Total Restocks',
+    rep_units_sold:'Units Sold', rep_units_restocked:'Units Restocked',
+    rep_sales_by_item:'SALES BY ITEM', rep_restocks_by_item:'RESTOCKS BY ITEM',
+    rep_current_stock:'CURRENT STOCK BY CATEGORY', rep_low_stock:'LOW STOCK ALERT',
+    rep_no_sales:'(no sales)', rep_no_restocks:'(no restocks)', rep_no_low:'(no low stock items)',
+    rep_units:'units', rep_left:'left', rep_tx:'transactions',
   },
   id: {
     nav_dashboard:'Beranda', nav_inventory:'Inventaris', nav_sales:'Penjualan', nav_data:'Impor / Ekspor', nav_settings:'Pengaturan',
@@ -861,6 +892,16 @@ const I18N = {
     sold_label:'Terjual', restocked_label:'Di-restock',
     act_added:'ditambahkan', act_updated:'diperbarui', act_removed:'dihapus',
     saved:'Tersimpan', deleted:'Item dihapus', reverted:'Dikembalikan',
+    report_h:'Laporan', report_d:'Buat ringkasan teks penjualan, restock, dan stok saat ini.',
+    range_today:'Hari Ini', range_7d:'7 Hari Terakhir', range_30d:'30 Hari Terakhir', range_all:'Sepanjang Waktu',
+    generate:'Buat Laporan', copy:'Salin', copied:'Disalin ke clipboard', share:'Bagikan',
+    rep_title:'LAPORAN STOCKLY', rep_period:'Periode', rep_summary:'RINGKASAN',
+    rep_total_sales:'Total Penjualan', rep_total_rev:'Total Pendapatan', rep_total_restock:'Total Restock',
+    rep_units_sold:'Unit Terjual', rep_units_restocked:'Unit Direstok',
+    rep_sales_by_item:'PENJUALAN PER ITEM', rep_restocks_by_item:'RESTOCK PER ITEM',
+    rep_current_stock:'STOK SAAT INI PER KATEGORI', rep_low_stock:'PERINGATAN STOK RENDAH',
+    rep_no_sales:'(tidak ada penjualan)', rep_no_restocks:'(tidak ada restock)', rep_no_low:'(tidak ada stok rendah)',
+    rep_units:'unit', rep_left:'tersisa', rep_tx:'transaksi',
   },
 };
 function t(key) { return (I18N[state?.settings?.lang || 'en'] || I18N.en)[key] ?? key; }
@@ -871,6 +912,8 @@ function applyI18n() {
   if (state.view === 'dashboard') renderDashboard();
   else if (state.view === 'inventory') renderInventory();
   else if (state.view === 'sales') { setTxType(state.txType); renderSales(); }
+  // Refresh report if it's been generated
+  if (state.lastReportRange) generateReport(state.lastReportRange);
   // Top title
   $('#viewTitle').textContent = t('nav_' + (state.view==='data'?'data':state.view));
 }
@@ -1121,6 +1164,141 @@ function exportTransactionsCSV() {
     ].map(csvEscape).join(','));
   });
   download('transactions_' + dateStamp() + '.csv', '﻿' + rows.join('\r\n'), 'text/csv');
+}
+
+/* -------- Report generator -------- */
+function buildReport(rangeKey) {
+  const now = Date.now();
+  let from = 0, label = t('range_all');
+  if (rangeKey === 'today') {
+    const d = new Date(); d.setHours(0,0,0,0); from = d.getTime();
+    label = t('range_today');
+  } else if (rangeKey === '7d') {
+    from = now - 7*86400000; label = t('range_7d');
+  } else if (rangeKey === '30d') {
+    from = now - 30*86400000; label = t('range_30d');
+  }
+
+  const inRange = state.transactions.filter(tx => tx.ts >= from);
+  const sales = inRange.filter(t => t.type === 'sale');
+  const restocks = inRange.filter(t => t.type === 'restock');
+  const totalRev = sales.reduce((s,t) => s + t.qty * t.price, 0);
+  const unitsSold = sales.reduce((s,t) => s + t.qty, 0);
+  const unitsRestocked = restocks.reduce((s,t) => s + t.qty, 0);
+
+  const aggregate = (list) => {
+    const map = {};
+    list.forEach(t => {
+      if (!map[t.itemName]) map[t.itemName] = { qty: 0, value: 0, unit: t.unit || '' };
+      map[t.itemName].qty += t.qty;
+      map[t.itemName].value += t.qty * t.price;
+    });
+    return Object.entries(map).sort((a,b) => b[1].qty - a[1].qty);
+  };
+  const salesByItem = aggregate(sales);
+  const restocksByItem = aggregate(restocks);
+
+  // Stock by category
+  const byCat = {};
+  state.items.forEach(i => {
+    const c = i.category || 'Uncategorized';
+    if (!byCat[c]) byCat[c] = { count: 0, units: 0 };
+    byCat[c].count++;
+    byCat[c].units += Number(i.quantity || 0);
+  });
+  const catList = Object.entries(byCat).sort((a,b) => b[1].units - a[1].units);
+
+  // Low stock
+  const low = state.items
+    .filter(i => Number(i.quantity || 0) <= state.settings.lowStockThreshold)
+    .sort((a,b) => Number(a.quantity||0) - Number(b.quantity||0));
+
+  const dateNow = new Date().toLocaleString(state.settings.lang === 'id' ? 'id-ID' : 'en-US', {
+    dateStyle: 'medium', timeStyle: 'short'
+  });
+
+  const pad = (s, n) => String(s).padEnd(n);
+  const lines = [];
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  lines.push('  📊  ' + t('rep_title'));
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  lines.push(t('rep_period') + ': ' + label);
+  lines.push(dateNow);
+  lines.push('');
+  lines.push('▸ ' + t('rep_summary'));
+  lines.push('  ' + pad(t('rep_total_sales') + ':', 22) + fmtNum(sales.length) + ' ' + t('rep_tx'));
+  lines.push('  ' + pad(t('rep_units_sold') + ':', 22) + fmtNum(unitsSold));
+  lines.push('  ' + pad(t('rep_total_rev') + ':', 22) + fmtMoney(totalRev));
+  lines.push('  ' + pad(t('rep_total_restock') + ':', 22) + fmtNum(restocks.length) + ' ' + t('rep_tx'));
+  lines.push('  ' + pad(t('rep_units_restocked') + ':', 22) + fmtNum(unitsRestocked));
+  lines.push('');
+
+  lines.push('▸ 📤 ' + t('rep_sales_by_item'));
+  if (!salesByItem.length) lines.push('  ' + t('rep_no_sales'));
+  else salesByItem.forEach(([name, d]) => {
+    lines.push('  • ' + pad(name, 28) + fmtNum(d.qty) + ' ' + (d.unit || t('rep_units')) + '  ' + fmtMoney(d.value));
+  });
+  lines.push('');
+
+  lines.push('▸ 📥 ' + t('rep_restocks_by_item'));
+  if (!restocksByItem.length) lines.push('  ' + t('rep_no_restocks'));
+  else restocksByItem.forEach(([name, d]) => {
+    lines.push('  • ' + pad(name, 28) + '+' + fmtNum(d.qty) + ' ' + (d.unit || t('rep_units')));
+  });
+  lines.push('');
+
+  lines.push('▸ 📦 ' + t('rep_current_stock'));
+  catList.forEach(([cat, d]) => {
+    lines.push('  • ' + pad(cat, 22) + fmtNum(d.count) + ' items · ' + fmtNum(d.units) + ' ' + t('rep_units'));
+  });
+  lines.push('');
+
+  lines.push('▸ ⚠️  ' + t('rep_low_stock') + ' (≤ ' + state.settings.lowStockThreshold + ')');
+  if (!low.length) lines.push('  ' + t('rep_no_low'));
+  else low.slice(0, 30).forEach(i => {
+    lines.push('  • ' + pad(i.name, 28) + fmtNum(Number(i.quantity||0)) + ' ' + (i.unit || '') + ' ' + t('rep_left'));
+  });
+  lines.push('');
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  lines.push('  Stockly · ' + state.items.length + ' items tracked');
+  lines.push('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+  return lines.join('\n');
+}
+
+function generateReport(rangeKey) {
+  document.querySelectorAll('button[data-range]').forEach(b => {
+    b.classList.toggle('primary', b.dataset.range === rangeKey);
+  });
+  state.lastReportRange = rangeKey;
+  $('#reportOutput').value = buildReport(rangeKey);
+}
+
+async function copyReport() {
+  const text = $('#reportOutput').value;
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(t('copied'));
+  } catch {
+    // Fallback for older browsers / non-https
+    const ta = $('#reportOutput');
+    ta.focus(); ta.select();
+    document.execCommand('copy');
+    toast(t('copied'));
+  }
+}
+
+async function shareReport() {
+  const text = $('#reportOutput').value;
+  if (!text) return;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: t('rep_title'), text });
+    } catch {/* user cancelled */}
+  } else {
+    copyReport();
+  }
 }
 
 function loadSeedData() {
@@ -1770,6 +1948,14 @@ function init() {
   $('#tx_submit').addEventListener('click', recordTransaction);
   $('#exportTxBtn').addEventListener('click', exportTransactionsCSV);
   setTxType('sale');
+
+  // Data — Report
+  document.querySelectorAll('button[data-range]').forEach(b => {
+    b.addEventListener('click', () => generateReport(b.dataset.range));
+  });
+  $('#copyReportBtn').addEventListener('click', copyReport);
+  $('#shareReportBtn').addEventListener('click', shareReport);
+  generateReport('today');
 
   // Data
   $('#exportCsvBtn').addEventListener('click', exportCSV);
