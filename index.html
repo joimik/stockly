@@ -354,6 +354,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
         Inventory
       </button>
+      <button data-view="sales">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        Sales
+      </button>
       <button data-view="data">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Import / Export
@@ -449,6 +453,49 @@
         </div>
       </section>
 
+      <!-- Sales view -->
+      <section class="view" id="view-sales">
+        <div class="grid stats" id="salesStats" style="margin-bottom:18px;"></div>
+        <div class="grid row-2">
+          <div class="card">
+            <div class="section-title"><h3>Record Transaction</h3></div>
+            <div style="display:flex;gap:8px;margin-bottom:14px;">
+              <button class="btn primary" id="txTypeSell" data-type="sale" style="flex:1;">📤 Sale</button>
+              <button class="btn" id="txTypeRestock" data-type="restock" style="flex:1;">📥 Restock</button>
+            </div>
+            <div style="display:grid;gap:12px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;">Item *</label>
+                <select id="tx_item"></select>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;">Quantity *</label>
+                  <input type="number" id="tx_qty" min="0" step="0.01" placeholder="0" />
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;" id="tx_priceLabel">Price / Unit</label>
+                  <input type="number" id="tx_price" min="0" step="0.01" placeholder="auto" />
+                </div>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;">Note (optional)</label>
+                <input type="text" id="tx_note" placeholder="Customer name, invoice #, etc." />
+              </div>
+              <div id="tx_preview" style="padding:10px 12px;background:var(--row-hover);border-radius:10px;font-size:13px;color:var(--muted);"></div>
+              <button class="btn primary" id="tx_submit">Record</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title">
+              <h3>Transaction History</h3>
+              <button class="btn ghost" id="exportTxBtn" style="font-size:12px;padding:5px 10px;">Export CSV</button>
+            </div>
+            <div id="txList" style="max-height:480px;overflow:auto;"></div>
+          </div>
+        </div>
+      </section>
+
       <!-- Data view -->
       <section class="view" id="view-data">
         <div class="grid row-2">
@@ -534,6 +581,14 @@
   <button data-view="inventory">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
     Items
+  </button>
+  <button data-view="sales">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    Sales
+  </button>
+  <button data-view="sales">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+    Sales
   </button>
   <button data-view="data">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -628,6 +683,7 @@ const STORAGE_KEY = 'inventory_data';
 const SETTINGS_KEY = 'inventory_settings';
 const CATS_KEY = 'inventory_categories';
 const ACTIVITY_KEY = 'inventory_activity';
+const TX_KEY = 'inventory_transactions';
 
 const DEFAULT_CATEGORIES = ['General', 'Food & Beverage', 'Electronics', 'Clothing', 'Office Supplies', 'Raw Materials'];
 const DEFAULT_SETTINGS = { dark: false, lowStockThreshold: 5, currency: 'Rp ' };
@@ -642,6 +698,8 @@ const state = {
   settings: { ...DEFAULT_SETTINGS, ...load(SETTINGS_KEY, {}) },
   categories: load(CATS_KEY, DEFAULT_CATEGORIES),
   activity: load(ACTIVITY_KEY, []),
+  transactions: load(TX_KEY, []),
+  txType: 'sale',
   view: 'dashboard',
   search: '',
   catFilter: '',
@@ -662,6 +720,7 @@ function persistAll() {
   save(SETTINGS_KEY, state.settings);
   save(CATS_KEY, state.categories);
   save(ACTIVITY_KEY, state.activity);
+  save(TX_KEY, state.transactions);
 }
 
 function uid() { return 'i_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -707,10 +766,177 @@ function setView(v) {
   $$('#sideNav button, #bottomNav button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
   $('#viewTitle').textContent = ({
     dashboard: 'Dashboard', inventory: 'Inventory', data: 'Import / Export', settings: 'Settings'
+    sales: 'Sales',
   })[v];
   if (v === 'dashboard') renderDashboard();
   if (v === 'inventory') renderInventory();
+  if (v === 'sales') renderSales();
 }
+
+/* -------- Sales -------- */
+function renderSales() {
+  // Item dropdown
+  const sel = $('#tx_item');
+  const cur = sel.value;
+  if (!state.items.length) {
+    sel.innerHTML = '<option value="">— No items in inventory —</option>';
+    sel.disabled = true;
+    $('#tx_submit').disabled = true;
+  } else {
+    sel.disabled = false;
+    $('#tx_submit').disabled = false;
+    sel.innerHTML = state.items.map(i =>
+      `<option value="${i.id}">${escapeHtml(i.name)} — ${fmtNum(Number(i.quantity||0))} ${escapeHtml(i.unit||'')} in stock</option>`
+    ).join('');
+    if (cur && state.items.find(x => x.id === cur)) sel.value = cur;
+  }
+  updateTxPreview();
+
+  // Stats
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayMs = today.getTime();
+  const sales = state.transactions.filter(t => t.type === 'sale');
+  const todaySales = sales.filter(t => t.ts >= todayMs);
+  const todayRevenue = todaySales.reduce((s,t) => s + (t.qty * t.price), 0);
+  const totalRevenue = sales.reduce((s,t) => s + (t.qty * t.price), 0);
+  const totalSold = sales.reduce((s,t) => s + t.qty, 0);
+
+  $('#salesStats').innerHTML = [
+    { label: "Today's Sales", value: fmtNum(todaySales.length), sub: 'transactions' },
+    { label: "Today's Revenue", value: fmtMoney(todayRevenue), sub: 'gross' },
+    { label: 'All-Time Revenue', value: fmtMoney(totalRevenue), sub: fmtNum(sales.length) + ' total sales' },
+    { label: 'Units Sold', value: fmtNum(Math.round(totalSold*100)/100), sub: 'all time' },
+  ].map(s => `
+    <div class="card stat-card">
+      <div class="label">${s.label}</div>
+      <div class="value">${s.value}</div>
+      <div class="sub">${s.sub}</div>
+    </div>`).join('');
+
+  // History
+  const list = $('#txList');
+  if (!state.transactions.length) {
+    list.innerHTML = `<div class="empty">No transactions yet</div>`;
+  } else {
+    list.innerHTML = state.transactions.slice(0, 50).map(t => {
+      const isSale = t.type === 'sale';
+      const sign = isSale ? '−' : '+';
+      const color = isSale ? 'var(--danger)' : 'var(--ok)';
+      return `<div class="activity-item" style="padding:10px 4px;">
+        <span style="display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;background:${isSale?'rgba(239,68,68,.12)':'rgba(16,185,129,.12)'};color:${color};font-weight:700;flex-shrink:0;">${sign}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13.5px;font-weight:600;">${escapeHtml(t.itemName)}</div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">
+            ${sign}${fmtNum(t.qty)} ${escapeHtml(t.unit||'')} · ${fmtMoney(t.qty * t.price)}${t.note ? ' · ' + escapeHtml(t.note) : ''}
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:11px;color:var(--muted);">${timeAgo(t.ts)}</div>
+          <button class="icon-btn" data-tx="${t.id}" title="Undo" style="margin-top:2px;width:26px;height:26px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+    list.querySelectorAll('button[data-tx]').forEach(b => {
+      b.addEventListener('click', () => undoTransaction(b.dataset.tx));
+    });
+  }
+}
+
+function updateTxPreview() {
+  const sel = $('#tx_item');
+  const id = sel.value;
+  const item = state.items.find(x => x.id === id);
+  const qty = parseFloat($('#tx_qty').value) || 0;
+  const preview = $('#tx_preview');
+  if (!item) { preview.textContent = 'Select an item to preview the change.'; return; }
+  const cur = Number(item.quantity || 0);
+  const newQty = state.txType === 'sale' ? cur - qty : cur + qty;
+  const warn = state.txType === 'sale' && qty > cur;
+  preview.innerHTML = `Stock: <strong style="color:var(--text);">${fmtNum(cur)}</strong> → <strong style="color:${warn?'var(--danger)':'var(--accent)'};">${fmtNum(newQty)}</strong> ${escapeHtml(item.unit||'')}${warn ? ' ⚠️ exceeds available stock' : ''}`;
+}
+
+function setTxType(type) {
+  state.txType = type;
+  $('#txTypeSell').classList.toggle('primary', type === 'sale');
+  $('#txTypeRestock').classList.toggle('primary', type === 'restock');
+  $('#tx_priceLabel').textContent = type === 'sale' ? 'Sale Price / Unit' : 'Cost / Unit';
+  $('#tx_submit').textContent = type === 'sale' ? 'Record Sale' : 'Record Restock';
+  updateTxPreview();
+}
+
+function recordTransaction() {
+  const id = $('#tx_item').value;
+  const item = state.items.find(x => x.id === id);
+  if (!item) { toast('Select an item'); return; }
+  const qty = parseFloat($('#tx_qty').value);
+  if (isNaN(qty) || qty <= 0) { toast('Enter a valid quantity'); $('#tx_qty').focus(); return; }
+  const cur = Number(item.quantity || 0);
+  if (state.txType === 'sale' && qty > cur) {
+    if (!confirm(`Only ${fmtNum(cur)} ${item.unit||''} in stock. Record anyway? Stock will go negative.`)) return;
+  }
+  const priceInput = parseFloat($('#tx_price').value);
+  const price = !isNaN(priceInput) ? priceInput : Number(item.pricePerUnit || 0);
+  const note = $('#tx_note').value.trim();
+
+  // Update stock
+  item.quantity = state.txType === 'sale' ? cur - qty : cur + qty;
+  item.updatedAt = Date.now();
+
+  // Log transaction
+  state.transactions.unshift({
+    id: 't_' + Date.now().toString(36) + Math.random().toString(36).slice(2,5),
+    type: state.txType,
+    itemId: item.id,
+    itemName: item.name,
+    unit: item.unit,
+    qty, price,
+    note,
+    ts: Date.now(),
+  });
+  state.transactions = state.transactions.slice(0, 500);
+
+  logActivity(state.txType === 'sale' ? 'edit' : 'edit', `${state.txType==='sale'?'Sold':'Restocked'} ${qty} × ${item.name}`);
+  persistAll();
+
+  // Reset form
+  $('#tx_qty').value = '';
+  $('#tx_price').value = '';
+  $('#tx_note').value = '';
+  renderSales();
+  toast(state.txType === 'sale' ? `Sale recorded — stock now ${fmtNum(item.quantity)}` : `Restocked — stock now ${fmtNum(item.quantity)}`);
+}
+
+function undoTransaction(txId) {
+  const tx = state.transactions.find(t => t.id === txId);
+  if (!tx) return;
+  if (!confirm(`Undo ${tx.type} of ${fmtNum(tx.qty)} × ${tx.itemName}? Stock will be reverted.`)) return;
+  const item = state.items.find(x => x.id === tx.itemId);
+  if (item) {
+    item.quantity = Number(item.quantity || 0) + (tx.type === 'sale' ? tx.qty : -tx.qty);
+    item.updatedAt = Date.now();
+  }
+  state.transactions = state.transactions.filter(t => t.id !== txId);
+  persistAll();
+  renderSales();
+  toast('Reverted');
+}
+
+function exportTransactionsCSV() {
+  if (!state.transactions.length) { toast('No transactions to export'); return; }
+  const cols = ['date','type','item','quantity','unit','pricePerUnit','total','note'];
+  const rows = [cols.join(',')];
+  state.transactions.forEach(t => {
+    rows.push([
+      new Date(t.ts).toISOString(),
+      t.type, t.itemName, t.qty, t.unit||'', t.price, (t.qty*t.price), t.note||''
+    ].map(csvEscape).join(','));
+  });
+  download('transactions_' + dateStamp() + '.csv', '﻿' + rows.join('\r\n'), 'text/csv');
+}
+
+function dummy_close_setView() {}
 
 /* -------- Dashboard -------- */
 function renderDashboard() {
@@ -1302,6 +1528,15 @@ function init() {
       renderInventory();
     });
   });
+
+  // Sales
+  $('#txTypeSell').addEventListener('click', () => setTxType('sale'));
+  $('#txTypeRestock').addEventListener('click', () => setTxType('restock'));
+  $('#tx_item').addEventListener('change', updateTxPreview);
+  $('#tx_qty').addEventListener('input', updateTxPreview);
+  $('#tx_submit').addEventListener('click', recordTransaction);
+  $('#exportTxBtn').addEventListener('click', exportTransactionsCSV);
+  setTxType('sale');
 
   // Data
   $('#exportCsvBtn').addEventListener('click', exportCSV);
