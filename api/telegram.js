@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import { kv } from './_kv.js';
 
 const TOKEN = process.env.BOT_TOKEN;
 const STATE_KEY = 'stockly:state';
